@@ -7,10 +7,21 @@ import {
   Phone, 
   Calendar, 
   MessageSquare, 
-  UserCheck, 
   X,
-  Search
+  Search,
+  TrendingUp,
+  Target,
+  BarChart2
 } from 'lucide-react';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  Cell 
+} from 'recharts';
 import { Lead, StatusLead, PlanoType } from '@/types';
 
 interface KanbanModuleProps {
@@ -78,13 +89,25 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
     l.telefone.includes(searchTerm)
   );
 
+  // Conversion Metrics
+  const totalLeads = leads.length;
+  const ganhosCount = leads.filter(l => l.status_venda === 'Ganho (Virou Aluno)').length;
+  const taxaConversao = totalLeads > 0 ? ((ganhosCount / totalLeads) * 100).toFixed(1) : '0.0';
+
+  const chartFunnelData = COLUMNS.map(col => ({
+    etapa: col.replace(' (Virou Aluno)', ''),
+    quantidade: leads.filter(l => l.status_venda === col).length
+  }));
+
+  const COLORS = ['#0E2A47', '#1d4ed8', '#C89A44', '#10b981', '#ef4444'];
+
   return (
     <div className="space-y-6">
       {/* Header & Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-[#0E2A47]">Funil de Vendas & Leads</h1>
-          <p className="text-sm text-[#0E2A47]/70">Gerencie a jornada de novos alunos desde o primeiro contato</p>
+          <h1 className="text-2xl font-bold text-[#0E2A47]">Funil de Vendas & CRM de Leads</h1>
+          <p className="text-sm text-[#0E2A47]/70">Acompanhamento e conversão automatizada do primeiro contato até o fechamento</p>
         </div>
 
         <div className="flex items-center space-x-3 w-full sm:w-auto">
@@ -92,7 +115,7 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
             <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input
               type="text"
-              placeholder="Buscar por nome ou fone..."
+              placeholder="Buscar lead por nome ou fone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-xs bg-[#F5E9DA]/50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
@@ -106,6 +129,50 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
             <Plus className="w-4 h-4" />
             <span>Novo Lead</span>
           </button>
+        </div>
+      </div>
+
+      {/* Analytics Conversion Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center space-x-3">
+          <div className="p-3 bg-[#0E2A47] text-[#C89A44] rounded-xl">
+            <Target className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 font-medium">Taxa de Conversão</p>
+            <p className="text-xl font-extrabold text-[#0E2A47]">{taxaConversao}%</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center space-x-3">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+            <TrendingUp className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 font-medium">Novos Alunos Convertidos</p>
+            <p className="text-xl font-extrabold text-emerald-600">{ganhosCount} Aluno(s)</p>
+          </div>
+        </div>
+
+        {/* Recharts Funnel Mini BarChart */}
+        <div className="md:col-span-2 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div className="w-full h-16">
+            <p className="text-[10px] font-bold text-[#0E2A47] uppercase tracking-wider mb-1 flex items-center space-x-1">
+              <BarChart2 className="w-3 h-3 text-[#C89A44]" />
+              <span>Distribuição por Etapa</span>
+            </p>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartFunnelData}>
+                <XAxis dataKey="etapa" fontSize={9} tickLine={false} />
+                <Tooltip formatter={(value) => [`${value} lead(s)`, 'Total']} />
+                <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
+                  {chartFunnelData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 

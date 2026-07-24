@@ -6,6 +6,7 @@ import { DashboardModule } from '@/components/DashboardModule';
 import { KanbanModule } from '@/components/KanbanModule';
 import { AlunosModule } from '@/components/AlunosModule';
 import { FinanceiroModule } from '@/components/FinanceiroModule';
+import { AiInsightsWidget } from '@/components/AiInsightsWidget';
 import { ConfiguracoesModule } from '@/components/ConfiguracoesModule';
 import { initialMockAlunos, initialMockLeads, initialMockTransacoes } from '@/lib/supabase';
 import { Aluno, Lead, Transacao } from '@/types';
@@ -32,7 +33,11 @@ export default function Home() {
       {/* Main Content Area */}
       <main className="flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full transition-all">
         {activeTab === 'dashboard' && (
-          <DashboardModule alunos={alunos} transacoes={transacoes} />
+          <DashboardModule 
+            alunos={alunos} 
+            transacoes={transacoes} 
+            onNavigateToAi={() => setActiveTab('insights')}
+          />
         )}
 
         {activeTab === 'kanban' && (
@@ -45,6 +50,10 @@ export default function Home() {
 
         {activeTab === 'financeiro' && (
           <FinanceiroModule transacoes={transacoes} setTransacoes={setTransacoes} />
+        )}
+
+        {activeTab === 'insights' && (
+          <AiInsightsWidget alunos={alunos} transacoes={transacoes} leads={leads} />
         )}
 
         {activeTab === 'configuracoes' && (

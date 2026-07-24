@@ -11,12 +11,20 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   CheckCircle2,
-  Clock
+  Clock,
+  Sparkles,
+  PieChart as PieChartIcon,
+  BarChart3
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
   AreaChart, 
   Area, 
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -28,10 +36,14 @@ import { Aluno, Transacao } from '@/types';
 interface DashboardModuleProps {
   alunos: Aluno[];
   transacoes: Transacao[];
+  onNavigateToAi?: () => void;
 }
 
-export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transacoes }) => {
-  // Calculations
+export const DashboardModule: React.FC<DashboardModuleProps> = ({ 
+  alunos, 
+  transacoes,
+  onNavigateToAi 
+}) => {
   const totalAlunosAtivos = alunos.filter(a => a.status_pagamento === 'EM DIA').length;
   
   const faturamentoMes = transacoes
@@ -50,8 +62,8 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
 
   const contasPertoVencimento = transacoes.filter(t => t.tipo === 'DESPESA' && t.status === 'PENDENTE');
 
-  // Chart data 6 months
-  const chartData = [
+  // Chart Data 1: Area Chart 6 Months
+  const chartEvolucao = [
     { mes: 'Fev', Receitas: 1800, Despesas: 900 },
     { mes: 'Mar', Receitas: 2200, Despesas: 1100 },
     { mes: 'Abr', Receitas: 2100, Despesas: 950 },
@@ -60,20 +72,42 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
     { mes: 'Jul', Receitas: faturamentoMes || 2850, Despesas: despesasMes || 1270 },
   ];
 
+  // Chart Data 2: Pie Chart (Alunos por Plano)
+  const mentoriaCount = alunos.filter(a => a.plano_atual === 'Mentoria Individual').length;
+  const grupoCount = alunos.filter(a => a.plano_atual === 'Aula em Grupo').length;
+  const masterclassCount = alunos.filter(a => a.plano_atual === 'Masterclass').length;
+
+  const chartPlanos = [
+    { name: 'Mentoria Individual', value: mentoriaCount || 2, color: '#C89A44' },
+    { name: 'Aula em Grupo', value: grupoCount || 1, color: '#0E2A47' },
+    { name: 'Masterclass', value: masterclassCount || 1, color: '#8b5cf6' },
+  ];
+
+  // Chart Data 3: Bar Chart (Receita por Categoria)
+  const chartReceitaCategoria = [
+    { categoria: 'Mentoria', valor: 1650 },
+    { categoria: 'Grupo', valor: 800 },
+    { categoria: 'Masterclass', valor: 2500 },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header Title */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-[#0E2A47]">Visão Geral da Escola</h1>
-          <p className="text-sm text-[#0E2A47]/70">Acompanhamento financeiro e pedagógico em tempo real</p>
+          <h1 className="text-2xl font-bold text-[#0E2A47]">Dashboard Inteligente Pâmela Vieira</h1>
+          <p className="text-sm text-[#0E2A47]/70">Controle financeiro intuitivo e inteligência de alunos Método CP12</p>
         </div>
-        <div className="flex items-center space-x-2 bg-[#F5E9DA] px-4 py-2 rounded-xl border border-[#C89A44]/30">
-          <Calendar className="w-4 h-4 text-[#C89A44]" />
-          <span className="text-xs font-semibold text-[#0E2A47]">
-            {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-          </span>
-        </div>
+        
+        {onNavigateToAi && (
+          <button
+            onClick={onNavigateToAi}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#0E2A47] text-[#C89A44] font-bold text-xs rounded-xl shadow border border-[#C89A44]/30 hover:bg-[#153a61] transition-all"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Ver Consultoria Alícia IA</span>
+          </button>
+        )}
       </div>
 
       {/* Top 5 Summary Metrics Cards */}
@@ -91,14 +125,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
           </p>
           <div className="flex items-center space-x-1 text-emerald-600 text-xs font-semibold mt-2">
             <ArrowUpRight className="w-3.5 h-3.5" />
-            <span>+14% vs mês anterior</span>
+            <span>+14% de crescimento</span>
           </div>
         </div>
 
         {/* Card 2: Despesas */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start">
-            <span className="text-xs font-medium text-gray-500">Despesas Pagas</span>
+            <span className="text-xs font-medium text-gray-500">Despesas Efetuadas</span>
             <div className="p-2 bg-rose-50 rounded-xl text-rose-600">
               <TrendingDown className="w-5 h-5" />
             </div>
@@ -108,14 +142,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
           </p>
           <div className="flex items-center space-x-1 text-rose-500 text-xs font-semibold mt-2">
             <ArrowDownRight className="w-3.5 h-3.5" />
-            <span>Controlado</span>
+            <span>Dentro do orçamento</span>
           </div>
         </div>
 
         {/* Card 3: Lucro Líquido (Dourado Highlight) */}
         <div className="bg-gradient-to-br from-[#C89A44] to-[#b28639] text-[#0E2A47] p-5 rounded-2xl shadow-lg shadow-[#C89A44]/20 hover:shadow-xl transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#0E2A47]/80">Lucro Líquido</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#0E2A47]/80">Lucro Líquido Real</span>
             <div className="p-2 bg-white/20 rounded-xl text-[#0E2A47]">
               <DollarSign className="w-5 h-5" />
             </div>
@@ -124,8 +158,8 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
             R$ {lucroLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </p>
           <div className="flex items-center space-x-1 text-[#0E2A47] text-xs font-bold mt-2">
-            <SparklesIcon />
-            <span>Margem Saudável</span>
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Excelente Margem</span>
           </div>
         </div>
 
@@ -164,14 +198,15 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
         </div>
       </div>
 
-      {/* Main Chart + Quick Info Grid */}
+      {/* Main Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recharts Area Chart */}
+        
+        {/* Chart 1: Recharts Area Chart (6 Months) */}
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="text-lg font-bold text-[#0E2A47]">Evolução Financeira (Últimos 6 Meses)</h2>
-              <p className="text-xs text-gray-500">Comparativo entre faturamento bruto e despesas operacionais</p>
+              <p className="text-xs text-gray-500">Fluxo contínuo entre receitas de mensalidades e custos operacionais</p>
             </div>
             <span className="px-3 py-1 bg-[#F5E9DA] text-[#C89A44] text-xs font-bold rounded-lg border border-[#C89A44]/30">
               Método CP12
@@ -180,7 +215,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
           
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <AreaChart data={chartEvolucao} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#C89A44" stopOpacity={0.4}/>
@@ -207,48 +242,50 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ alunos, transa
           </div>
         </div>
 
-        {/* Quick Alerts Widget */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between space-y-4">
+        {/* Chart 2: Pie Chart (Distribuição por Plano) */}
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#0E2A47] mb-4">Avisos e Pendências</h2>
-            <div className="space-y-3">
-              {contasPertoVencimento.length > 0 ? (
-                contasPertoVencimento.map(conta => (
-                  <div key={conta.id} className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-amber-900">{conta.descricao}</p>
-                      <p className="text-[10px] text-amber-700">Vence em: {conta.data_vencimento}</p>
-                    </div>
-                    <span className="text-xs font-extrabold text-amber-800">
-                      R$ {conta.valor.toFixed(2)}
-                    </span>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-[#0E2A47]">Alunos por Plano</h2>
+              <PieChartIcon className="w-4 h-4 text-[#C89A44]" />
+            </div>
+
+            <div className="h-52 w-full flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartPlanos}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={75}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {chartPlanos.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${value} aluno(s)`, 'Total']} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="space-y-2 mt-2">
+              {chartPlanos.map((item) => (
+                <div key={item.name} className="flex justify-between items-center text-xs">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                    <span className="text-gray-600 font-medium">{item.name}</span>
                   </div>
-                ))
-              ) : (
-                <div className="p-4 bg-emerald-50 rounded-xl text-emerald-800 text-xs font-semibold text-center">
-                  Nenhuma conta pendente para hoje! 🎉
+                  <span className="font-extrabold text-[#0E2A47]">{item.value}</span>
                 </div>
-              )}
+              ))}
             </div>
           </div>
-
-          <div className="p-4 bg-[#F5E9DA] rounded-xl border border-[#C89A44]/30">
-            <h3 className="text-xs font-bold text-[#0E2A47] flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#C89A44]"></span>
-              <span>Dica do Método CP12</span>
-            </h3>
-            <p className="text-[11px] text-[#0E2A47]/80 mt-1">
-              Garanta que os alunos com 0 créditos de aula sejam notificados pela Alícia 24h antes para renovação do plano.
-            </p>
-          </div>
         </div>
+
       </div>
     </div>
   );
 };
-
-const SparklesIcon = () => (
-  <svg className="w-3.5 h-3.5 text-[#0E2A47]" fill="currentColor" viewBox="0 0 20 20">
-    <path d="M10 2a1 1 0 011 1v1.323l.707.707 1.323-1.323a1 1 0 011.414 1.414l-1.323 1.323.707.707H17a1 1 0 010 2h-1.323l-.707.707 1.323 1.323a1 1 0 01-1.414 1.414l-1.323-1.323-.707.707V17a1 1 0 01-2 0v-1.323l-.707-.707-1.323 1.323a1 1 0 01-1.414-1.414l1.323-1.323-.707-.707H3a1 1 0 010-2h1.323l.707-.707-1.323-1.323a1 1 0 011.414-1.414l1.323 1.323.707-.707V3a1 1 0 011-1z" />
-  </svg>
-);

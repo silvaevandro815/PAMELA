@@ -6,13 +6,17 @@ import {
   TrendingUp, 
   TrendingDown, 
   Plus, 
-  CheckCircle2, 
   Clock, 
-  Filter, 
   X,
-  PieChart,
-  Calendar
+  PieChart as PieChartIcon
 } from 'lucide-react';
+import { 
+  ResponsiveContainer, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  Tooltip 
+} from 'recharts';
 import { Transacao, TipoTransacao } from '@/types';
 
 interface FinanceiroModuleProps {
@@ -46,6 +50,14 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
   const contasAPagarPendentes = transacoes
     .filter(t => t.tipo === 'DESPESA' && t.status === 'PENDENTE')
     .reduce((acc, t) => acc + t.valor, 0);
+
+  // Expense Distribution Data
+  const despesasPorCategoria = [
+    { name: 'Infraestrutura', value: 800, color: '#0E2A47' },
+    { name: 'Marketing & Ads', value: 350, color: '#C89A44' },
+    { name: 'Tecnologia', value: 120, color: '#8b5cf6' },
+    { name: 'Manutenção', value: 250, color: '#f59e0b' },
+  ];
 
   const handleAddTransacao = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +107,7 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-[#0E2A47]">Fluxo de Caixa & Lançamentos</h1>
-          <p className="text-sm text-[#0E2A47]/70">Controle rigoroso de receitas, custos operacionais e lucro líquido</p>
+          <p className="text-sm text-[#0E2A47]/70">Controle de receitas, custos operacionais e margem líquida</p>
         </div>
 
         <button
@@ -150,99 +162,150 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex space-x-2 bg-white p-2 rounded-2xl border border-gray-100 overflow-x-auto">
-        {[
-          { id: 'TODOS', label: 'Todas as Transações' },
-          { id: 'RECEITAS', label: 'Receitas (Entradas)' },
-          { id: 'DESPESAS', label: 'Despesas (Saídas)' },
-          { id: 'CONTAS_A_PAGAR', label: '⚠️ Contas a Pagar' },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
-              activeTab === tab.id
-                ? 'bg-[#0E2A47] text-[#C89A44] shadow'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Expense PieChart Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Table Column */}
+        <div className="lg:col-span-2 space-y-4">
+          
+          {/* Filter Tabs */}
+          <div className="flex space-x-2 bg-white p-2 rounded-2xl border border-gray-100 overflow-x-auto">
+            {[
+              { id: 'TODOS', label: 'Todas as Transações' },
+              { id: 'RECEITAS', label: 'Receitas (Entradas)' },
+              { id: 'DESPESAS', label: 'Despesas (Saídas)' },
+              { id: 'CONTAS_A_PAGAR', label: '⚠️ Contas a Pagar' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-[#0E2A47] text-[#C89A44] shadow'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Transactions Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#0E2A47] text-white text-xs uppercase tracking-wider font-semibold">
-                <th className="p-4">Descrição</th>
-                <th className="p-4">Tipo</th>
-                <th className="p-4">Categoria</th>
-                <th className="p-4">Vencimento</th>
-                <th className="p-4">Valor</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 text-right">Ação</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-xs">
-              {filteredTransacoes.length > 0 ? (
-                filteredTransacoes.map(t => (
-                  <tr key={t.id} className="hover:bg-[#F5E9DA]/30 transition-colors">
-                    <td className="p-4 font-bold text-[#0E2A47]">{t.descricao}</td>
-
-                    <td className="p-4">
-                      <span className={`px-2 py-0.5 rounded font-extrabold text-[10px] ${
-                        t.tipo === 'RECEITA' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-                      }`}>
-                        {t.tipo}
-                      </span>
-                    </td>
-
-                    <td className="p-4 text-gray-600">{t.categoria}</td>
-
-                    <td className="p-4 text-gray-500 font-medium">
-                      {new Date(t.data_vencimento).toLocaleDateString('pt-BR')}
-                    </td>
-
-                    <td className="p-4 font-extrabold text-sm text-[#0E2A47]">
-                      R$ {t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </td>
-
-                    <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                        t.status === 'PAGO' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        {t.status === 'PAGO' ? 'PAGO / RECEBIDO' : 'PENDENTE'}
-                      </span>
-                    </td>
-
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => handleToggleStatus(t.id)}
-                        className={`px-3 py-1 text-[11px] font-bold rounded-lg transition-colors ${
-                          t.status === 'PAGO'
-                            ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow'
-                        }`}
-                      >
-                        {t.status === 'PAGO' ? 'Marcar Pendente' : 'Confirmar Pgto'}
-                      </button>
-                    </td>
+          {/* Transactions Table */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#0E2A47] text-white text-xs uppercase tracking-wider font-semibold">
+                    <th className="p-4">Descrição</th>
+                    <th className="p-4">Tipo</th>
+                    <th className="p-4">Categoria</th>
+                    <th className="p-4">Vencimento</th>
+                    <th className="p-4">Valor</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 text-right">Ação</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="p-8 text-center text-gray-400">
-                    Nenhum lançamento encontrado para a aba selecionada.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-xs">
+                  {filteredTransacoes.length > 0 ? (
+                    filteredTransacoes.map(t => (
+                      <tr key={t.id} className="hover:bg-[#F5E9DA]/30 transition-colors">
+                        <td className="p-4 font-bold text-[#0E2A47]">{t.descricao}</td>
+
+                        <td className="p-4">
+                          <span className={`px-2 py-0.5 rounded font-extrabold text-[10px] ${
+                            t.tipo === 'RECEITA' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                          }`}>
+                            {t.tipo}
+                          </span>
+                        </td>
+
+                        <td className="p-4 text-gray-600">{t.categoria}</td>
+
+                        <td className="p-4 text-gray-500 font-medium">
+                          {new Date(t.data_vencimento).toLocaleDateString('pt-BR')}
+                        </td>
+
+                        <td className="p-4 font-extrabold text-sm text-[#0E2A47]">
+                          R$ {t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </td>
+
+                        <td className="p-4">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            t.status === 'PAGO' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {t.status === 'PAGO' ? 'PAGO / RECEBIDO' : 'PENDENTE'}
+                          </span>
+                        </td>
+
+                        <td className="p-4 text-right">
+                          <button
+                            onClick={() => handleToggleStatus(t.id)}
+                            className={`px-3 py-1 text-[11px] font-bold rounded-lg transition-colors ${
+                              t.status === 'PAGO'
+                                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow'
+                            }`}
+                          >
+                            {t.status === 'PAGO' ? 'Marcar Pendente' : 'Confirmar Pgto'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-gray-400">
+                        Nenhum lançamento encontrado para a aba selecionada.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
+
+        {/* Expense Category PieChart */}
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-[#0E2A47]">Despesas por Categoria</h2>
+            <PieChartIcon className="w-4 h-4 text-[#C89A44]" />
+          </div>
+
+          <div className="h-56 w-full flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={despesasPorCategoria}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={45}
+                  outerRadius={70}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {despesasPorCategoria.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(val) => [`R$ ${val}`, 'Custo']} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="space-y-2">
+            {despesasPorCategoria.map((cat) => (
+              <div key={cat.name} className="flex justify-between items-center text-xs">
+                <div className="flex items-center space-x-2">
+                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }}></span>
+                  <span className="text-gray-600 font-medium">{cat.name}</span>
+                </div>
+                <span className="font-extrabold text-[#0E2A47]">R$ {cat.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       {/* Modal Novo Lançamento */}

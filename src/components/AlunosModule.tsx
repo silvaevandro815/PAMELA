@@ -4,17 +4,14 @@ import React, { useState } from 'react';
 import { 
   Plus, 
   Search, 
-  UserCheck, 
-  AlertCircle, 
-  Calendar, 
   Phone, 
   ShieldAlert, 
   Edit3, 
   X,
-  Award,
-  Sparkles
+  Eye
 } from 'lucide-react';
 import { Aluno, PlanoType, StatusPagamento } from '@/types';
+import { AlunoDetailDrawer } from '@/components/AlunoDetailDrawer';
 
 interface AlunosModuleProps {
   alunos: Aluno[];
@@ -26,6 +23,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
   const [statusFilter, setStatusFilter] = useState<string>('TODOS');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAluno, setEditingAluno] = useState<Aluno | null>(null);
+  const [selectedAlunoDrawer, setSelectedAlunoDrawer] = useState<Aluno | null>(null);
 
   // Form State
   const [nome, setNome] = useState('');
@@ -36,7 +34,6 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
   const [statusPagamento, setStatusPagamento] = useState<StatusPagamento>('EM DIA');
   const [dataVencimento, setDataVencimento] = useState('');
 
-  // Age calculation helper
   const calculateAge = (birthDate: string): number => {
     if (!birthDate) return 0;
     const today = new Date();
@@ -127,8 +124,8 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
       {/* Header & Action Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-[#0E2A47]">Gestão de Alunos (CRM)</h1>
-          <p className="text-sm text-[#0E2A47]/70">Controle de inscrições, créditos de aula e idades para Masterclass</p>
+          <h1 className="text-2xl font-bold text-[#0E2A47]">Gestão de Alunos (Método CP12)</h1>
+          <p className="text-sm text-[#0E2A47]/70">Controle pedagógico, créditos de aula e triagem de maioridade</p>
         </div>
 
         <button
@@ -146,14 +143,14 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
           <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
           <input
             type="text"
-            placeholder="Buscar aluno por nome ou telefone..."
+            placeholder="Buscar por nome ou telefone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-xs bg-[#F5E9DA]/50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
           />
         </div>
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto">
           <span className="text-xs font-bold text-[#0E2A47]">Status:</span>
           {['TODOS', 'EM DIA', 'PENDENTE', 'ATRASADO'].map(st => (
             <button
@@ -196,13 +193,18 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                     <tr key={aluno.id} className="hover:bg-[#F5E9DA]/30 transition-colors">
                       {/* Aluno Name & Age */}
                       <td className="p-4 font-bold text-[#0E2A47]">
-                        <div>
-                          <span>{aluno.nome}</span>
-                          {aluno.data_nascimento && (
-                            <p className="text-[10px] font-normal text-gray-500">
-                              {age} anos ({new Date(aluno.data_nascimento).toLocaleDateString('pt-BR')})
-                            </p>
-                          )}
+                        <div 
+                          className="cursor-pointer group flex items-center space-x-2"
+                          onClick={() => setSelectedAlunoDrawer(aluno)}
+                        >
+                          <div>
+                            <span className="group-hover:text-[#C89A44] transition-colors">{aluno.nome}</span>
+                            {aluno.data_nascimento && (
+                              <p className="text-[10px] font-normal text-gray-500">
+                                {age} anos ({new Date(aluno.data_nascimento).toLocaleDateString('pt-BR')})
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </td>
 
@@ -235,7 +237,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                         </div>
                       </td>
 
-                      {/* Créditos de Aula + Adjustment Buttons */}
+                      {/* Créditos de Aula */}
                       <td className="p-4">
                         <div className="flex items-center space-x-2">
                           <span className="font-extrabold text-sm text-[#0E2A47] bg-[#F5E9DA] px-2.5 py-1 rounded-lg border border-[#C89A44]/30">
@@ -243,22 +245,22 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                           </span>
                           <button
                             onClick={() => handleAdjustCreditos(aluno.id, 1)}
-                            className="p-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-md font-bold text-xs"
-                            title="Adicionar 1 Crédito"
+                            className="p-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded font-bold text-xs"
+                            title="Adicionar 1 Aula"
                           >
                             +1
                           </button>
                           <button
                             onClick={() => handleAdjustCreditos(aluno.id, 4)}
-                            className="p-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-md font-bold text-xs"
+                            className="p-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded font-bold text-xs"
                             title="Adicionar Pacote 4 Aulas"
                           >
                             +4
                           </button>
                           <button
                             onClick={() => handleAdjustCreditos(aluno.id, -1)}
-                            className="p-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-md font-bold text-xs"
-                            title="Descontar 1 Aula Consumida"
+                            className="p-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded font-bold text-xs"
+                            title="Descontar 1 Aula"
                           >
                             -1
                           </button>
@@ -284,11 +286,18 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                       </td>
 
                       {/* Actions */}
-                      <td className="p-4 text-right">
+                      <td className="p-4 text-right space-x-1">
+                        <button
+                          onClick={() => setSelectedAlunoDrawer(aluno)}
+                          className="p-2 text-[#0E2A47] hover:bg-[#F5E9DA] rounded-lg transition-colors"
+                          title="Ver Ficha CP12"
+                        >
+                          <Eye className="w-4 h-4 text-[#0E2A47]" />
+                        </button>
                         <button
                           onClick={() => handleOpenEditModal(aluno)}
                           className="p-2 text-[#0E2A47] hover:bg-[#F5E9DA] rounded-lg transition-colors"
-                          aria-label="Editar Aluno"
+                          title="Editar Aluno"
                         >
                           <Edit3 className="w-4 h-4 text-[#C89A44]" />
                         </button>
@@ -307,6 +316,13 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
           </table>
         </div>
       </div>
+
+      {/* Drawer Ficha CP12 */}
+      <AlunoDetailDrawer 
+        aluno={selectedAlunoDrawer}
+        onClose={() => setSelectedAlunoDrawer(null)}
+        onAdjustCreditos={handleAdjustCreditos}
+      />
 
       {/* Modal Cadastro/Edição de Aluno */}
       {isModalOpen && (

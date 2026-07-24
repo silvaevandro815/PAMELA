@@ -16,6 +16,9 @@ export interface Aluno {
   creditos_ativos: number;
   data_vencimento: string;
   status_pagamento: StatusPagamento;
+  nivel_cp12?: string;
+  extensao_vocal?: string;
+  observacoes_pedagogicas?: string;
   criado_em?: string;
 }
 
@@ -27,6 +30,7 @@ export interface Lead {
   status_venda: StatusLead;
   data_ultimo_contato: string;
   notas?: string;
+  valor_estimado?: number;
 }
 
 export interface Transacao {
@@ -41,11 +45,11 @@ export interface Transacao {
   aluno_id?: string;
 }
 
-export interface DashboardMetrics {
-  faturamentoMes: number;
-  despesasMes: number;
-  lucroLiquido: number;
-  totalAlunosAtivos: number;
-  contasAPagarPendente: number;
-  contasAPagarUrgentes: number;
+export interface AiInsight {
+  id: string;
+  tipo: 'ECONOMIA' | 'PROJECAO' | 'RETENCAO' | 'DICA';
+  titulo: string;
+  descricao: string;
+  impactoEstimado?: string;
+  acaoSugerida?: string;
 }
