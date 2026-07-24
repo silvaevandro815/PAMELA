@@ -1,0 +1,359 @@
+{
+  "name": "6. Lembrete",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "higia-cesar",
+        "remoteJid": "={{ $json.phoneNumber }}",
+        "messageText": "=Olá! ⏰\nLembrete de: {{ $json.summary }}\nHorário: {{ DateTime.fromISO($json.startTime).setZone('America/Sao_Paulo').toFormat('HH:mm') }}\n\n(Se for aula, chegue com a voz aquecida! Se for cancelar, por favor nos avise. 🎤✨)",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        224,
+        176
+      ],
+      "id": "374a102e-59b1-48d7-bbfc-becebc4af490",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0515406f-3142-4874-847a-91ec9ea8a5b6",
+      "name": "Wait",
+      "webhookId": "043b69ec-10a5-4b4a-8941-baad1c69b4b7"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -224,
+        192
+      ],
+      "id": "017d808f-c58b-42e4-87df-eb46be634d96",
+      "name": "loop de envio"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "fim",
+      "typeVersion": 1,
+      "position": [
+        0,
+        192
+      ],
+      "id": "fe82bf46-9dbc-43ae-a8ba-06de923b8817"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "ff28494f-e7d2-40d5-bbfc-0e582a82baab",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1584,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "calendar_id",
+              "value": "COLOQUE_AQUI_O_EMAIL_DO_CALENDARIO_DA_PAMELA",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "instance_name",
+              "value": "NOME_DA_SUA_INSTANCIA_EVOLUTION",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae1fdbc4-5d34-4958-ade1-536292dff352",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1376,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "mode": "list",
+          "value": "umm032797@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $json.start_time }}",
+        "timeMax": "={{ $json.end_time }}",
+        "options": {}
+      },
+      "id": "c8234bcc-3c9a-48b9-9e23-bf9773c65b99",
+      "name": "Get Calendar Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -928,
+        208
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7juWTOZ4Pu22tVl5",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Extract phone number from calendar event description\nconst item = $input.item.json;\n\n// Extract phone number from description using regex\nconst description = item.description || '';\nconst phoneMatch = description.match(/Telefone:\\s*([\\d\\s\\-\\(\\)]+)/);\n\nlet phoneNumber = '';\nif (phoneMatch && phoneMatch[1]) {\n  // Clean phone number to only digits\n  phoneNumber = phoneMatch[1].replace(/\\D/g, '');\n}\n\n// Format start time\nconst startTime = item.start?.dateTime || item.start?.date || '';\n\n// Return event data with extracted phone number and formatted start time\nreturn {\n  json: {\n    eventId: item.id,\n    summary: item.summary,\n    description: item.description,\n    phoneNumber: phoneNumber,\n    startTime: startTime,\n    originalEvent: item\n  }\n};"
+      },
+      "id": "e8871ed2-2f12-4905-9280-5117e1f7f1c7",
+      "name": "Extract Phone Number",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.phoneNumber }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0cc37f2d-19ea-4df2-a00a-02835e7669e7",
+      "name": "Filter Valid Phone Numbers",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -480,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "start_time",
+              "value": "={{ $now.plus({ hours: 1 }).toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "end_time",
+              "value": "={{ $now.plus({ hours: 1, minutes: 30 }).toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "71de281f-75c9-4674-8f2f-7aa7b7a99d15",
+      "name": "Calculate Time Window1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1152,
+        208
+      ]
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-01-19T15:30:27.006-03:00",
+          "Readable date": "January 19th 2026, 3:30:27 pm",
+          "Readable time": "3:30:27 pm",
+          "Day of week": "Monday",
+          "Year": "2026",
+          "Month": "January",
+          "Day of month": "19",
+          "Hour": "15",
+          "Minute": "30",
+          "Second": "27",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "loop de envio": {
+      "main": [
+        [
+          {
+            "node": "fim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "loop de envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Calculate Time Window1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calendar Events": {
+      "main": [
+        [
+          {
+            "node": "Extract Phone Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Phone Number": {
+      "main": [
+        [
+          {
+            "node": "Filter Valid Phone Numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Time Window1": {
+      "main": [
+        [
+          {
+            "node": "Get Calendar Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Valid Phone Numbers": {
+      "main": [
+        [
+          {
+            "node": "loop de envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "78dc4662-64d4-4dd9-aedc-6a94e118305b",
+  "meta": {
+    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+  },
+  "tags": []
+}

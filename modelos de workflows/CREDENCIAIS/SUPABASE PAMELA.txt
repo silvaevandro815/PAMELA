@@ -1,0 +1,9 @@
+Host: aws-0-sa-east-1.pooler.supabase.com
+
+Database: postgres
+
+User: postgres.nkkmaepwarsbgptwrvik
+
+PASS: samurayX22@1
+
+porta: 6543    ATIVAR CHAVE SSL

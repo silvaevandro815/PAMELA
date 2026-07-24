@@ -1,0 +1,119 @@
+{
+  "name": "4. Atualizar status",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e56e25c6-d00e-40aa-83b6-4985aea910f1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        320,
+        528
+      ],
+      "id": "212c6dc4-d83a-4e4a-b989-67cc708b0ea4",
+      "name": " Webhook Digitando...",
+      "webhookId": "e56e25c6-d00e-40aa-83b6-4985aea910f1"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "send-presence",
+        "instanceName": "={{ $json.body.instancia }}",
+        "remoteJid": "={{ $json.body.telefone }}",
+        "presence": "={{ $json.body.status }}",
+        "delay": 20000
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        560,
+        528
+      ],
+      "id": "93462ab4-e5d4-4a9a-b284-333980fc30d4",
+      "name": "Atualizar status",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "[![fazer.ai](https://framerusercontent.com/images/HqY9djLTzyutSKnuLLqBr92KbM.png?scale-down-to=256)](https://fazer.ai?utm_source=n8n&utm_campaign=sec-ep2&utm_medium=evo-4)\n\n## Esse é um template faça você mesmo do canal\n## Lucas Moreira\n\n### Inscreva-se no nosso canal no YouTube\n[![YouTube Lucas Moreira](https://img.shields.io/youtube/channel/subscribers/UCtmp6SxzLscu0GRTbgM8FTw?style=flat-square&logo=youtube&label=Inscreva-se&color=f00)](https://youtube.com/@eulucassmoreira?si=0lH7hwX9pukjhmPQ)\n\n### Siga nosso GitHub\n[![GitHub fazer.ai](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white&label)](https://github.com/fazer-ai)\n",
+        "height": 440,
+        "width": 550,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "66587cb1-eb73-4911-ab10-fe87cb31e2d8",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## Quer entender como funciona?\n\n\n### Assista o vídeo, deixe um like, e se inscreva no canal para ter acesso a mais workflows como esse!\n\n[![IMAGE ALT TEXT HERE](https://i1.ytimg.com/vi_webp/cvTWGNJGAu4/maxresdefault.webp)](https://www.youtube.com/watch?v=cvTWGNJGAu4)",
+        "height": 440,
+        "width": 500,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "f2aeff2a-43b8-4420-8ef1-e31fea2129eb",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "![Evolution API](https://mintlify.s3.us-west-1.amazonaws.com/evolution/logo/dark.svg)",
+        "height": 100,
+        "width": 280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        224,
+        304
+      ],
+      "id": "7b8f2883-8f48-4a22-807a-e83b8115800b",
+      "name": "Sticky Note20"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    " Webhook Digitando...": {
+      "main": [
+        [
+          {
+            "node": "Atualizar status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "b5f510ce-4e24-495d-9cc8-38d2607c5f7d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+  },
+  "id": "uW0y0OykDZ9Z3H2fUHF0l",
+  "tags": []
+}

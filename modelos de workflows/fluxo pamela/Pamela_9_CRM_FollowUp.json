@@ -1,0 +1,238 @@
+{
+  "name": "Pamela - CRM de Follow-up",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, nome, telefone, interesse FROM leads WHERE status_venda = 'AGUARDANDO_RESPOSTA' AND data_ultimo_contato <= NOW() - INTERVAL '1 day';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -112,
+        -144
+      ],
+      "id": "6a1844d4-c946-4af6-978e-b4b6b01f5e95",
+      "name": "Buscar Leads Parados",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        112,
+        -144
+      ],
+      "id": "82208249-4955-4ac0-a13d-76bb367fb6d8",
+      "name": "Loop de Leads"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        -144
+      ],
+      "id": "1de3f7a0-2923-41c6-ab38-1461ac66e7cf",
+      "name": "Pausa Anti-Spam",
+      "webhookId": "pausa-anti-spam-webhook-9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.evandrosilvagallina.cloud/message/sendText/Pamela",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "evolutionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Loop de Leads').item.json.telefone }}\",\n  \"text\": \"{{ $('Gerar Follow-up Alícia').item.json.message.content }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1024,
+        -144
+      ],
+      "id": "c32d295f-2dde-4bb3-85d7-8110a62b9f0a",
+      "name": "Enviar WhatsApp Lead"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE leads SET status_venda = 'FOLLOW_UP_ENVIADO', data_ultimo_contato = NOW() WHERE id = '{{ $('Loop de Leads').item.json.id }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1248,
+        -144
+      ],
+      "id": "47da24b0-6d99-4e21-9d3c-8fbcbf4c2265",
+      "name": "Atualizar Status Lead",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "responses": {
+          "values": [
+            {},
+            {}
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        -144
+      ],
+      "id": "053b05de-cb22-4720-b20e-05dac5f44c2d",
+      "name": "Gerar Follow-up Alícia",
+      "credentials": {
+        "openAiApi": {
+          "id": "yaVUTfYvY1wk9lHF",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        -144
+      ],
+      "id": "0f23d57e-58db-47da-96de-6f15a37e785a",
+      "name": "Gatilho CADA 3 DIAS"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Buscar Leads Parados": {
+      "main": [
+        [
+          {
+            "node": "Loop de Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop de Leads": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pausa Anti-Spam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Lead": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status Lead": {
+      "main": [
+        [
+          {
+            "node": "Loop de Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pausa Anti-Spam": {
+      "main": [
+        [
+          {
+            "node": "Gerar Follow-up Alícia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar Follow-up Alícia": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho CADA 3 DIAS": {
+      "main": [
+        [
+          {
+            "node": "Buscar Leads Parados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c4aa15d4-60b4-4a82-8a0d-734aec1d932f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"
+  },
+  "nodeGroups": [],
+  "id": "UMnxQ8OZGsESM0RE",
+  "tags": []
+}

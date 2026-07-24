@@ -1,0 +1,382 @@
+{
+  "name": "workflow-7 lembrete clientes",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "higia-cesar",
+        "remoteJid": "={{ $json.phoneNumber }}",
+        "messageText": "=Olá! 🌿 Aqui é a Hígia do Dr. Cesar.\nPassando para confirmar sua consulta amanhã:\n\n🗓️ *Evento:* {{ $json.summary }}\n⏰ *Horário:* {{ DateTime.fromISO($json.startTime).setZone('America/Sao_Paulo').toFormat('dd/MM/yyyy à\\'s\\' HH:mm') }}\n\nEstá tudo confirmado para sua vinda?",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1808,
+        -80
+      ],
+      "id": "3fc87c56-7d36-49b1-aefd-d0fe5f7cb2ec",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "dc999bdd-88de-4d5a-8e40-bde9593b49da",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "calendar_id",
+              "value": "umm032797@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "instance_name",
+              "value": "higia-cesar",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "985c281e-dcbd-4da9-8e23-3f9efb8c4195",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "mode": "list",
+          "value": "umm032797@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $('Tomorrow Start (00:00)').item.json.start_time }}",
+        "timeMax": "={{ $('Tomorrow End (23:59)').item.json.end_time }}",
+        "options": {}
+      },
+      "id": "b72aa3c9-99fc-4d7f-b37b-397550ba5f01",
+      "name": "Get Calendar Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        -64
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "7juWTOZ4Pu22tVl5",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Extract phone number from calendar event description\nconst item = $input.item.json;\n\n// Extract phone number from description using regex\nconst description = item.description || '';\nconst phoneMatch = description.match(/Telefone:\\s*([\\d\\s\\-\\(\\)]+)/);\n\nlet phoneNumber = '';\nif (phoneMatch && phoneMatch[1]) {\n  // Clean phone number to only digits\n  phoneNumber = phoneMatch[1].replace(/\\D/g, '');\n}\n\n// Format start time\nconst startTime = item.start?.dateTime || item.start?.date || '';\n\n// Return event data with extracted phone number and formatted start time\nreturn {\n  json: {\n    eventId: item.id,\n    summary: item.summary,\n    description: item.description,\n    phoneNumber: phoneNumber,\n    startTime: startTime,\n    originalEvent: item\n  }\n};"
+      },
+      "id": "683620f4-89fc-412f-873b-6adde1721094",
+      "name": "Extract Phone Number",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.phoneNumber }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "id-2",
+              "leftValue": "={{ $json.phoneNumber }}",
+              "rightValue": "553288874319",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "id-3",
+              "leftValue": "={{ $json.phoneNumber }}",
+              "rightValue": "553298099547",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "74b78a8c-398f-40a4-8309-796e0f0796da",
+      "name": "Filter Valid Phone Numbers",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now.plus({ days: 1 }).startOf('day').toISO() }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "start_time",
+        "options": {
+          "includeInputFields": false
+        }
+      },
+      "id": "e0252a93-8c0e-4fbf-b2d9-0fba75b9f346",
+      "name": "Tomorrow Start (00:00)",
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now.plus({ days: 1 }).endOf('day').toISO() }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "end_time",
+        "options": {}
+      },
+      "id": "644170d5-fdd7-4a78-942a-65ff4d32a30f",
+      "name": "Tomorrow End (23:59)",
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        -80
+      ],
+      "id": "a8e968a5-22bd-4139-8e31-83f14ce3aa88",
+      "name": "Wait",
+      "webhookId": "043b69ec-10a5-4b4a-8941-baad1c69b4b7"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1360,
+        -64
+      ],
+      "id": "041c5e47-c2d7-4dea-a7ff-f1411963edd8",
+      "name": "loop de envio"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "fim",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        -240
+      ],
+      "id": "2af9b135-cdf9-47cd-b44d-4587bc6c730b"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Tomorrow Start (00:00)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calendar Events": {
+      "main": [
+        [
+          {
+            "node": "Extract Phone Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Phone Number": {
+      "main": [
+        [
+          {
+            "node": "Filter Valid Phone Numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tomorrow Start (00:00)": {
+      "main": [
+        [
+          {
+            "node": "Tomorrow End (23:59)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tomorrow End (23:59)": {
+      "main": [
+        [
+          {
+            "node": "Get Calendar Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Valid Phone Numbers": {
+      "main": [
+        [
+          {
+            "node": "loop de envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "loop de envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "loop de envio": {
+      "main": [
+        [
+          {
+            "node": "fim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fim": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "7a9524c1-beb4-4737-a2b4-72e59ad4543b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+  },
+  "id": "FLl-J8DPWiTOiQEc1wmFz",
+  "tags": []
+}

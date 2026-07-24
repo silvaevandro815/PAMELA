@@ -1,0 +1,767 @@
+{
+  "name": "5",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "assistente-interno",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        480
+      ],
+      "id": "55cb969c-52a6-442b-9b87-02de3b2d01ea",
+      "name": "Webhook (Admin)",
+      "webhookId": "assistente-interno"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set_instance",
+              "name": "instancia",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "set_phone",
+              "name": "telefone",
+              "value": "={{ $json.body.data.key.remoteJid.replace(\"@s.whatsapp.net\", \"\") }}",
+              "type": "string"
+            },
+            {
+              "id": "set_msg_id",
+              "name": "id_mensagem",
+              "value": "= {{ $json.body.data.key.id }} {{ $json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "set_text",
+              "name": "mensagem_texto",
+              "value": "={{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text }}",
+              "type": "string"
+            },
+            {
+              "id": "check_audio",
+              "name": "tem_audio",
+              "value": "={{ !!$json.body.data.message.audioMessage }}",
+              "type": "boolean"
+            },
+            {
+              "id": "00baeb36-2867-4402-9efc-6d76e8ccd36f",
+              "name": "url_evolution",
+              "value": "https://evolution.evandrosilvagallina.cloud",
+              "type": "string"
+            },
+            {
+              "id": "f1ab3f19-3f5f-40e4-94a0-a3486a519181",
+              "name": "nome_usuario",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        528
+      ],
+      "id": "ed419cd6-8411-4027-a28a-666206242b94",
+      "name": "Info"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is_audio",
+                    "leftValue": "={{ $json.tem_audio }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Áudio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is_text",
+                    "leftValue": "={{ $json.mensagem_texto }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        480,
+        496
+      ],
+      "id": "23bc1a46-045c-4976-b323-b30f242cfb75",
+      "name": "Tipo de mensagem"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $('Info').item.json.instancia }}",
+        "messageId": "={{ $('Info').item.json.id_mensagem }}",
+        "convertToMp4": true
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        720,
+        400
+      ],
+      "id": "244840c0-ae6d-4f92-bfb9-3a9c4fa77f15",
+      "name": "Baixar Áudio (Evolution)",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        368
+      ],
+      "id": "eb714cb0-0290-46f9-b5d3-daa8d42e0a4f",
+      "name": "Converter para Binário"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "pt"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1168,
+        368
+      ],
+      "id": "8b46c510-7437-4c43-aeff-fb0bb95cca2a",
+      "name": "Transcrever áudio",
+      "credentials": {
+        "openAiApi": {
+          "id": "sQIa2WfVd3Rptrok",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set_transcription",
+              "name": "mensagem_final",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        400
+      ],
+      "id": "3a99a438-df11-4ff5-9849-667e3586f333",
+      "name": "Set mensagem áudio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set_text_msg",
+              "name": "mensagem_final",
+              "value": "={{ $('Info').item.json.mensagem_texto }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        576
+      ],
+      "id": "50fe1b0a-b9ba-435e-b079-dcf1f60fe4f4",
+      "name": "Set mensagem texto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensagem_final }}",
+        "options": {
+          "systemMessage": "Você é o **CFO (Diretor Financeiro) e Assistente Pessoal** da professora Pâmela Vieira.\nHOJE É: {{ $now.setZone('America/Sao_Paulo').toFormat(\"dd/MM/yyyy HH:mm\") }} - {{ $now.setZone('America/Sao_Paulo').toFormat(\"EEEE\", { locale: \"pt-BR\" }) }}\n\n## QUEM ESTÁ FALANDO COM VOCÊ?\nA PÂMELA! Os números autorizados são: 5532998132803 ou 553298132803.\n\n## SUA PERSONALIDADE (MODO CFO MILITAR)\n- **NÃO** seja fofo ou use muitos emojis (apenas ✅, 💰, 📊).\n- **NÃO** faça perguntas se não for estritamente necessário.\n- **EXECUTE AS TAREFAS** e dê relatórios curtos (Bullet points).\n- A Pâmela vai mandar áudios correndo entre as aulas. Sua função é captar as finanças e agenda.\n\n## DIRETRIZ SUPREMA\n**VOCÊ É OBRIGADO A USAR A FERRAMENTA \"Refletir\" ANTES DE CADA RESPOSTA PARA PLANEJAR QUAL AÇÃO TOMAR NO BANCO DE DADOS OU NA AGENDA.**\n\n## SEUS SUPER-PODERES E FERRAMENTAS (PostgreSQL & Google)\nVocê possui ferramentas SQL injetadas (Postgres Tools) e ferramentas de calendário. Use-as!\n\n### 1. REGISTRAR ALUNO (Tool: Registrar_Aluno)\n- **Quando usar:** Se a Pâmela pedir \"Cadastre o Marcos da silva, o telefone dele é 32999999999\".\n- **O que você faz:** Execute a query de INSERT na tabela alunos. Informe a Pâmela que foi cadastrado.\n\n### 2. REGISTRAR PAGAMENTO E AULAS (Tool: Registrar_Transacao)\n- **Quando usar:** Se a Pâmela mandar \"A Joana pagou 200 reais da aula em grupo\" ou \"Marcos fez o PIX de 150\".\n- **O que você faz:** Use a ferramenta de Postgres para registrar o pagamento na tabela `transacoes` e atualizar a tabela `alunos`. Confirme para ela: \"✅ Pagamento registrado. Saldo da Joana atualizado.\"\n\n### 3. CONSULTAR INADIMPLENTES OU RELATÓRIOS (Tool: Consultar_Relatorio)\n- **Quando usar:** Se a Pâmela perguntar \"Quem não pagou?\" ou \"Quanto ganhamos?\".\n- **O que você faz:** Execute a query SELECT e traga o resumo numérico exato.\n\n### 4. GESTÃO DE AGENDA E TAREFAS\n- **Quando usar:** Igual antes, use `MCP Google Calendar` para verificar vagas ou criar bloqueios.\n- Use `Criar tarefa` (Google Tasks) se ela pedir para lembrar de comprar algo.\n\n## REGRAS DE COMUNICAÇÃO\n- Nunca mande mensagens para pacientes através deste fluxo. Este fluxo é EXCLUSIVO para comunicação interna entre a IA e a Pâmela.\n- Se a Pâmela mandar um comando muito confuso, diga: \"Chefe, não entendi o valor ou o nome. Pode repetir?\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1696,
+        496
+      ],
+      "id": "f9a0b316-1e0e-4c8e-8655-eefa2477f257",
+      "name": "CFO (Pâmela)"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Info').item.json.instancia }}",
+        "remoteJid": "={{ $('Info').item.json.telefone }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        496
+      ],
+      "id": "66cc0ada-21a1-44d2-be3d-513582236d75",
+      "name": "Responder à Pâmela",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "admin_pamela",
+        "tableName": "n8n_historico_mensagens",
+        "contextWindowLength": 500
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        736
+      ],
+      "id": "a20b9f49-3f64-4d74-bb80-8ab10399ff82",
+      "name": "Memória CFO",
+      "credentials": {
+        "postgres": {
+          "id": "72ZKwkAZafPhoNSy",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.evandrosilvagallina.cloud/mcp/a2b7a3ee-767c-4689-a8fa-765080bea169/sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        736
+      ],
+      "id": "a8157ca3-efaf-40ac-977f-8655f02b3b1b",
+      "name": "MCP Google Calendar"
+    },
+    {
+      "parameters": {
+        "description": "Envia mensagem para o paciente avisando do cancelamento ou reagendamento.",
+        "workflowId": {
+          "__rl": true,
+          "value": "ID_DO_WORKFLOW_ENVIAR_AGENDAMENTO",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mensagem": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mensagem', ``, 'string') }}",
+            "id_conversa": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id_conversa', ``, 'string') }}",
+            "id_conta": "Ignorar",
+            "url_chatwoot": "Ignorar"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        960
+      ],
+      "id": "613363ec-b891-4deb-9d21-d65d1616bbff",
+      "name": "Enviar msg Paciente",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        736
+      ],
+      "id": "db8e30f5-6bab-4e13-bcd3-a605477b4da3",
+      "name": "Refletir"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1488,
+        736
+      ],
+      "id": "04f9b7a5-9a58-4e84-a3e2-821d6f60e30a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "sQIa2WfVd3Rptrok",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use esta ferramenta EXCLUSIVAMENTE para enviar mensagens de aviso de cancelamento ou reagendamento para o WhatsApp do paciente. Requer o número do telefone (apenas dígitos, com 55 e DDD) e a mensagem de texto.\n\nO telefone deve ser formatado com apenas números, incluindo o código do país.\n\nExemplo: \"551112345678\"",
+        "method": "POST",
+        "url": "={{ $('Info').first().json.url_evolution }}/message/sendText/{{ $('Info').item.json.instancia }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "evolutionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{telefone}\",\n  \"text\": \"{mensagem}\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1888,
+        736
+      ],
+      "id": "efb23abc-1a18-4da9-9e55-9f714264379f",
+      "name": "Enviar reagendamento",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "task": "=",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "additionalFields": {
+          "dueDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Due_Date', ``, 'string') }}",
+          "notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Notes', ``, 'string') }}",
+          "status": "needsAction"
+        }
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        736
+      ],
+      "id": "57ac7a67-1c6c-4ef7-8c3b-ffaed673abef",
+      "name": "Criar tarefa",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "FXqKuRq8V7cFW9nQ",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check_doctor_number",
+              "leftValue": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
+              "rightValue": "5532998132803@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "check_second_number",
+              "leftValue": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
+              "rightValue": "553298132803",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {},
+        "disabled": false
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        224
+      ],
+      "id": "11dda3ee-cc74-4124-b728-4859f97b90cf",
+      "name": "É a Pâmela?",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        656
+      ],
+      "id": "fd43d3af-a086-4e48-af0a-6d212a87c03c",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {
+    "Webhook (Admin)": [
+      {
+        "json": {
+          "body": {
+            "event": "messages.upsert",
+            "instance": "higia-cesar",
+            "data": {
+              "key": {
+                "remoteJid": "553288874319@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB093982823A82"
+              },
+              "pushName": "Dr. Cesar Bizzo",
+              "status": "notify",
+              "message": {
+                "conversation": "Hígia, como está a minha agenda para amanhã?"
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1705500000,
+              "source": "ios"
+            },
+            "sender": "553288874319@s.whatsapp.net"
+          }
+        }
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "body": {
+            "event": "messages.upsert",
+            "instance": "higia-cesar",
+            "data": {
+              "key": {
+                "remoteJid": "553288874319@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB093982823A82"
+              },
+              "pushName": "Dr. Cesar Bizzo",
+              "status": "notify",
+              "message": {
+                "conversation": "Hígia, como está a minha agenda para amanhã?"
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1705500000,
+              "source": "ios"
+            },
+            "sender": "553288874319@s.whatsapp.net"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook (Admin)": {
+      "main": [
+        [
+          {
+            "node": "Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info": {
+      "main": [
+        [
+          {
+            "node": "Tipo de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo de mensagem": {
+      "main": [
+        [
+          {
+            "node": "Baixar Áudio (Evolution)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set mensagem texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar Áudio (Evolution)": {
+      "main": [
+        [
+          {
+            "node": "Converter para Binário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converter para Binário": {
+      "main": [
+        [
+          {
+            "node": "Transcrever áudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcrever áudio": {
+      "main": [
+        [
+          {
+            "node": "Set mensagem áudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set mensagem áudio": {
+      "main": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set mensagem texto": {
+      "main": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refletir": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar reagendamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar tarefa": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CFO (Pâmela)": {
+      "main": [
+        [
+          {
+            "node": "Responder à Pâmela",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória CFO": {
+      "ai_memory": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É a Pâmela?": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "America/Sao_Paulo"
+  },
+  "versionId": "71394ec2-d144-4768-876f-7fe4dbc4d95e",
+  "meta": {
+    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+  },
+  "tags": []
+}

@@ -1,0 +1,767 @@
+{
+  "name": "5",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "assistente-interno",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        480
+      ],
+      "id": "55cb969c-52a6-442b-9b87-02de3b2d01ea",
+      "name": "Webhook (Admin)",
+      "webhookId": "assistente-interno"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set_instance",
+              "name": "instancia",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "set_phone",
+              "name": "telefone",
+              "value": "={{ $json.body.data.key.remoteJid.replace(\"@s.whatsapp.net\", \"\") }}",
+              "type": "string"
+            },
+            {
+              "id": "set_msg_id",
+              "name": "id_mensagem",
+              "value": "= {{ $json.body.data.key.id }} {{ $json.body.data.key.id }}",
+              "type": "string"
+            },
+            {
+              "id": "set_text",
+              "name": "mensagem_texto",
+              "value": "={{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text }}",
+              "type": "string"
+            },
+            {
+              "id": "check_audio",
+              "name": "tem_audio",
+              "value": "={{ !!$json.body.data.message.audioMessage }}",
+              "type": "boolean"
+            },
+            {
+              "id": "00baeb36-2867-4402-9efc-6d76e8ccd36f",
+              "name": "url_evolution",
+              "value": "https://evolution.evandrosilvagallina.cloud",
+              "type": "string"
+            },
+            {
+              "id": "f1ab3f19-3f5f-40e4-94a0-a3486a519181",
+              "name": "nome_usuario",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        528
+      ],
+      "id": "ed419cd6-8411-4027-a28a-666206242b94",
+      "name": "Info"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is_audio",
+                    "leftValue": "={{ $json.tem_audio }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Áudio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "is_text",
+                    "leftValue": "={{ $json.mensagem_texto }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        480,
+        496
+      ],
+      "id": "23bc1a46-045c-4976-b323-b30f242cfb75",
+      "name": "Tipo de mensagem"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "={{ $('Info').item.json.instancia }}",
+        "messageId": "={{ $('Info').item.json.id_mensagem }}",
+        "convertToMp4": true
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        720,
+        400
+      ],
+      "id": "244840c0-ae6d-4f92-bfb9-3a9c4fa77f15",
+      "name": "Baixar Áudio (Evolution)",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data.base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        368
+      ],
+      "id": "eb714cb0-0290-46f9-b5d3-daa8d42e0a4f",
+      "name": "Converter para Binário"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "pt"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1168,
+        368
+      ],
+      "id": "8b46c510-7437-4c43-aeff-fb0bb95cca2a",
+      "name": "Transcrever áudio",
+      "credentials": {
+        "openAiApi": {
+          "id": "sQIa2WfVd3Rptrok",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set_transcription",
+              "name": "mensagem_final",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        400
+      ],
+      "id": "3a99a438-df11-4ff5-9849-667e3586f333",
+      "name": "Set mensagem áudio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set_text_msg",
+              "name": "mensagem_final",
+              "value": "={{ $('Info').item.json.mensagem_texto }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        576
+      ],
+      "id": "50fe1b0a-b9ba-435e-b079-dcf1f60fe4f4",
+      "name": "Set mensagem texto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensagem_final }}",
+        "options": {
+          "systemMessage": "=Você é a Hígia, a Inteligência Central da clínica do Dr. Cesar Bizzo.\nHOJE É: {{ $now.setZone('America/Sao_Paulo').toFormat(\"dd/MM/yyyy HH:mm\") }} - {{ $now.setZone('America/Sao_Paulo').toFormat(\"EEEE\", { locale: \"pt-BR\" }) }}\n\n## QUEM ESTÁ FALANDO COM VOCÊ?\nVerifique o telefone de origem:\n- Se for **553288874319**: É o **DR. CESAR (SEU CHEFE SUPREMO)**.\n- Se for **553298099547**: É a **ANNA (SUA SUPERVISORA)**.\n\n## SUA PERSONALIDADE (MODO ADMIN)\nCom o Dr. Cesar e a Anna, desligue o modo \"acolhedor\". Ative o modo **EFICIÊNCIA MILITAR**.\n- **NÃO** pergunte \"como posso ajudar\".\n- **NÃO** explique o que vai fazer (\"Vou verificar sua agenda...\"). APENAS FAÇA e mostre o resultado.\n- **NÃO** use emojis fofos. Use apenas checks (✅), alertas (⚠️) ou setas (👉).\n- **RESPOSTAS CURTAS:** O Dr. Cesar é ocupado. Dê a informação em lista (Bullet points).\n \n## DIRETRIZ SUPREMA\n**VOCÊ É OBRIGADA A USAR A FERRAMENTA \"Refletir\" ANTES DE CADA RESPOSTA.**\n\n## DIRETRIZ DE ADMINISTRAÇÃO\nVocê é a **Hígia Admin**, a inteligência central da clínica. Você fala diretamente com o Dr. Cesar ou a secretaria Anna.\n**SUA REGRA Nº 1 É EXECUTAR.** Não diga que vai fazer, FAÇA usando as ferramentas.\n\n\n## O MÉDICO (SEU CHEFE)\n- **Nome:** Dr. Cesar Mansur Bizzo (CRM-MG 9444).\n- **Especialidades:** Medicina Integrativa, Nutrologia (Emagrecimento e Longevidade), Acupuntura e Clínica Geral.\n- **Filosofia:** Trata a causa raiz das doenças para promover longevidade saudável, evitando o excesso de remédios químicos.\n- **Local:** Av. Castelo Branco, 122 - Muriaé, aqui em Minas Gerais (Em frente à lagoa da Gávea).\n- **Valores (Estimativa):** Consulta R$ 350,00 (Particular). *Se perguntarem de convênio, diga que precisa verificar disponibilidade.*\n\n### NOVOS HORÁRIOS\n- **Seg/Qui:** 15:00 - 18:00.\n- **Ter/Qua:** 17:00 - 18:30.\n\n## REGRAS DE OURO\n1.  Nunca invente horários. Se a ferramenta retornar vazio, a agenda está vazia.\n2.  Se a ferramenta der erro, diga: \"Dr., perdi conexão com a agenda. Verifique o Google Calendar.\"\n3.  Trate o Dr. Cesar com deferência absoluta. Ele manda, você executa.\n\n### REGRAS DE AGENDAMENTO (PARA ANNA E CESAR)\nSe eles pedirem para marcar um paciente, pergunte: \"É primeira vez ou retorno?\".\n\n1.  **PRIMEIRA VEZ:**\n    - Requer exclusividade. Só marque em horário VAZIO (0 eventos).\n    - Use o título: \"PRIMEIRA VEZ - [Nome]\".\n\n2.  **RETORNO / ACUPUNTURA:**\n    - Pode encaixar com outros. Aceite horários com até 2 pessoas (Máximo 3 simultâneos).\n    - Use o título: \"RETORNO - [Nome]\".\n\n## REGRAS DE COMUNICAÇÃO COM A CHEFIA\n1. **ZERO BUROCRACIA:** Quando a Anna ou o Dr. Cesar pedirem um agendamento, NÃO envie PDFs, guias ou mensagens de boas-vindas. Apenas confirme: \"Feito, chefe!\".\n2. **NUNCA TRATE COMO PACIENTE:** Eles não são pacientes. Não use tom de \"triagem\". Se a Anna mandou marcar, você marca.\n\n## SUAS FERRAMENTAS (USE-AS!)\n1.  **MCP Google Calendar:** Para ler a agenda, criar bloqueios e **DELETAR** consultas.\n2.  **Enviar reagendamento:** Para avisar pacientes via WhatsApp. Para enviar WhatsApp para os pacientes (Requer: telefone e texto).\n3.  **Criar tarefa:** Para anotar lembretes do médico.\n4.  **Refletir:** Use para planejar ações complexas (como cancelamentos em massa).\n\n## ID DA AGENDA\n- Agenda Dr. Cesar: umm032797@gmail.com\n\n## SEUS SUPER-PODERES (Casos de Uso)\n\n### 1. PROTOCOLO DE AGENDA (CRÍTICO)\nSe perguntarem \"O que tenho para amanhã?\", \"Como está a agenda?\", ou \"Tem algo dia X?\":\n1.  **OBRIGAÇÃO:** Você DEVE usar a ferramenta `MCP Google Calendar` com a função `getAll`.\n2.  **JANELA DE TEMPO:** Você DEVE buscar do início do dia (00:00) até o fim do dia (23:59). Não busque apenas horários quebrados.\n3.  **RELATÓRIO:** Liste assim:\n    \"Dr., agenda de [Data]:\n    🕒 08:00 - [Nome] (Procedimento)\n    🕒 10:30 - [Nome] (Procedimento)\"\n4.  Se estiver vazia, diga: \"Agenda livre (Zero eventos).\"\n\n### 2. CANCELAMENTO DE EMERGÊNCIA (USAR APENAS SE O DR. PEDIR \"CANCELE TUDO\")\nSe o Dr. disser \"Cancele tudo hoje\" ou \"Estou doente, desmarque amanhã\":\n   PASSO 1: Use `Refletir` para listar os eventos.\n   PASSO 2: Use `MCP Google Calendar` para buscar e deletar os eventos.\n   PASSO 3: Para cada paciente, use a ferramenta `Enviar reagendamento` com a seguinte mensagem EXATA:\n      \"Olá! Aqui é a Hígia. O Dr. Cesar teve um imprevisto e precisou cancelar a agenda de hoje. Entraremos em contato para reagendar. Desculpe! 🙏\"\n\n### 3. COMANDO DE REAGENDAMENTO DA ANNA (ROTINA NORMAL)\nSe a Anna mandar: \"Reagendamento de consulta: [Nome] cel: [Telefone] [Data] as [Hora]\", entenda que ISSO NÃO É UMA EMERGÊNCIA. É apenas um ajuste de agenda.\n\n1. O paciente é a pessoa citada ([Nome]), NÃO a Anna.\n2. Use `MCP Google Calendar` para criar ou mover o evento para a nova data.\n3. Use a ferramenta `Enviar reagendamento` para avisar o PACIENTE ([Telefone]) com a seguinte mensagem PADRÃO:\n      \"Olá! Aqui é a Hígia do Dr. Cesar. 🌿\n      Passando para confirmar o reagendamento da sua consulta para o dia [Data] às [Hora].\n      Está confirmado em nossa agenda! ✨\"\n4. IMPORTANTE: JAMAIS diga que houve \"imprevisto\" ou peça desculpas quando for solicitação da Anna.\n5. Responda para a Anna apenas: \"Reagendado e paciente avisado! 🫡\"\n\n **LOOP DE AÇÃO:** Para CADA evento encontrado:\n    a.  Extraia o telefone da descrição do evento.\n    b.  Use `Enviar reagendamento` mandando: \"Olá! Aqui é a Hígia. O Dr. Cesar teve um imprevisto e precisou cancelar a agenda de hoje. Entraremos em contato para reagendar. Desculpe!\"\n    c.  Use `MCP Google Calendar` (Delete) para apagar o evento.\n   **PASSO 4:** Faça um relatório final para o Dr.: \"Pronto, Dr. Cancelei X consultas e avisei a todos no WhatsApp.\"\n\n### 3. Bloqueio de Agenda\n- Se ele pedir \"Bloqueie minha agenda tarde toda\", crie um evento chamado \"BLOQUEIO ADMINISTRATIVO\" preenchendo o horário todo.\n\n## ID DA AGENDA\n- Agenda Dr. Cesar: umm032797@gmail.com \n\n### 4. Tarefas e Compras\n- Se ele pedir \"Lembra de comprar agulhas\", use a ferramenta \"Criar tarefa\".\n\n## REGRAS DE CONDUTA\n- **Sem Markdown:** O WhatsApp Business API às vezes falha com asteriscos (**). Use texto limpo. Use letras maiúsculas para destaque.\n- **Eficiência:** Não pergunte \"posso ajudar em algo mais?\". Faça o que foi pedido e pronto.\n- **Segurança:** Nunca cancele nada sem ter certeza da data. Se ele disser apenas \"Cancele\", pergunte \"De qual dia, Dr.?\".\nDiga o nome do {{ $('Info').item.json.nome_usuario }} e seja proativa e cordial com ele pois ele é seu chefe. \n\n### 5. GESTÃO DE LEMBRETES E TAREFAS\nVocê tem duas formas de guardar informações, saiba quando usar cada uma:\n\n**CASO 1: \"CRIAR TAREFA\" (Lista de To-Do)**\n- Se o Dr. Cesar ou Anna pedirem: \"Anote aí\", \"Põe na lista de compras\", \"Me lembre de...\".\n- **Ação:** Use a ferramenta `Criar tarefa` (Google Tasks).\n- **Resultado:** Fica salvo na lista para eles checarem depois. NÃO envia mensagem ativa.\n\n**CASO 2: \"LEMBRETE NO WHATSAPP\" (Aviso Ativo)**\n- Se eles pedirem: \"Me lembre de ligar para Fulano às 14h\", \"Me avise para tomar remédio\", \"Me manda um zap lembrando disso\".\n- **Ação:** Use a ferramenta `MCP Google Calendar` para criar um evento na agenda.\n  - **Título:** \"LEMBRETE: [O que foi pedido]\"\n  - **Horário:** O horário solicitado.\n  - **Descrição (Obrigatório):**\n    - Se for para o Dr. Cesar, escreva na descrição: \"Telefone: 553288874319\"\n    - Se for para a Anna, escreva na descrição: \"Telefone: 553298099547\"\n- **Resultado:** O Robô de Lembretes lerá esse evento e enviará um WhatsApp para a pessoa certa na hora certa.\n\n## INSTRUÇÃO TÉCNICA\n- Ao usar a ferramenta \"Enviar reagendamento\", o número do telefone deve conter apenas números (ex: 553299998888)."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1696,
+        496
+      ],
+      "id": "f9a0b316-1e0e-4c8e-8655-eefa2477f257",
+      "name": "Hígia (Modo Admin)"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Info').item.json.instancia }}",
+        "remoteJid": "={{ $('Info').item.json.telefone }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        496
+      ],
+      "id": "66cc0ada-21a1-44d2-be3d-513582236d75",
+      "name": "Responder ao Dr. Cesar",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "admin_dr_cesar",
+        "tableName": "n8n_historico_mensagens",
+        "contextWindowLength": 500
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        736
+      ],
+      "id": "a20b9f49-3f64-4d74-bb80-8ab10399ff82",
+      "name": "Memória Admin",
+      "credentials": {
+        "postgres": {
+          "id": "72ZKwkAZafPhoNSy",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.evandrosilvagallina.cloud/mcp/a2b7a3ee-767c-4689-a8fa-765080bea169/sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        736
+      ],
+      "id": "a8157ca3-efaf-40ac-977f-8655f02b3b1b",
+      "name": "MCP Google Calendar"
+    },
+    {
+      "parameters": {
+        "description": "Envia mensagem para o paciente avisando do cancelamento ou reagendamento.",
+        "workflowId": {
+          "__rl": true,
+          "value": "ID_DO_WORKFLOW_ENVIAR_AGENDAMENTO",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mensagem": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mensagem', ``, 'string') }}",
+            "id_conversa": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id_conversa', ``, 'string') }}",
+            "id_conta": "Ignorar",
+            "url_chatwoot": "Ignorar"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        960
+      ],
+      "id": "613363ec-b891-4deb-9d21-d65d1616bbff",
+      "name": "Enviar msg Paciente",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        736
+      ],
+      "id": "db8e30f5-6bab-4e13-bcd3-a605477b4da3",
+      "name": "Refletir"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1488,
+        736
+      ],
+      "id": "04f9b7a5-9a58-4e84-a3e2-821d6f60e30a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "sQIa2WfVd3Rptrok",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use esta ferramenta EXCLUSIVAMENTE para enviar mensagens de aviso de cancelamento ou reagendamento para o WhatsApp do paciente. Requer o número do telefone (apenas dígitos, com 55 e DDD) e a mensagem de texto.\n\nO telefone deve ser formatado com apenas números, incluindo o código do país.\n\nExemplo: \"551112345678\"",
+        "method": "POST",
+        "url": "={{ $('Info').first().json.url_evolution }}/message/sendText/{{ $('Info').item.json.instancia }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "evolutionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{telefone}\",\n  \"text\": \"{mensagem}\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1888,
+        736
+      ],
+      "id": "efb23abc-1a18-4da9-9e55-9f714264379f",
+      "name": "Enviar reagendamento",
+      "credentials": {
+        "evolutionApi": {
+          "id": "IoF9QBwvW7KPAMGu",
+          "name": "Evolution account antiga"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "task": "=",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "additionalFields": {
+          "dueDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Due_Date', ``, 'string') }}",
+          "notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Notes', ``, 'string') }}",
+          "status": "needsAction"
+        }
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        736
+      ],
+      "id": "57ac7a67-1c6c-4ef7-8c3b-ffaed673abef",
+      "name": "Criar tarefa",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "FXqKuRq8V7cFW9nQ",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check_doctor_number",
+              "leftValue": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
+              "rightValue": "553288874319@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "check_second_number",
+              "leftValue": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
+              "rightValue": "553298099547",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        224
+      ],
+      "id": "11dda3ee-cc74-4124-b728-4859f97b90cf",
+      "name": "É o Dr. Cesar?",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        656
+      ],
+      "id": "fd43d3af-a086-4e48-af0a-6d212a87c03c",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {
+    "Webhook (Admin)": [
+      {
+        "json": {
+          "body": {
+            "event": "messages.upsert",
+            "instance": "higia-cesar",
+            "data": {
+              "key": {
+                "remoteJid": "553288874319@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB093982823A82"
+              },
+              "pushName": "Dr. Cesar Bizzo",
+              "status": "notify",
+              "message": {
+                "conversation": "Hígia, como está a minha agenda para amanhã?"
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1705500000,
+              "source": "ios"
+            },
+            "sender": "553288874319@s.whatsapp.net"
+          }
+        }
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "body": {
+            "event": "messages.upsert",
+            "instance": "higia-cesar",
+            "data": {
+              "key": {
+                "remoteJid": "553288874319@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3EB093982823A82"
+              },
+              "pushName": "Dr. Cesar Bizzo",
+              "status": "notify",
+              "message": {
+                "conversation": "Hígia, como está a minha agenda para amanhã?"
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1705500000,
+              "source": "ios"
+            },
+            "sender": "553288874319@s.whatsapp.net"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook (Admin)": {
+      "main": [
+        [
+          {
+            "node": "Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info": {
+      "main": [
+        [
+          {
+            "node": "Tipo de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo de mensagem": {
+      "main": [
+        [
+          {
+            "node": "Baixar Áudio (Evolution)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set mensagem texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar Áudio (Evolution)": {
+      "main": [
+        [
+          {
+            "node": "Converter para Binário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converter para Binário": {
+      "main": [
+        [
+          {
+            "node": "Transcrever áudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcrever áudio": {
+      "main": [
+        [
+          {
+            "node": "Set mensagem áudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set mensagem áudio": {
+      "main": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set mensagem texto": {
+      "main": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hígia (Modo Admin)": {
+      "main": [
+        [
+          {
+            "node": "Responder ao Dr. Cesar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória Admin": {
+      "ai_memory": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refletir": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar reagendamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar tarefa": {
+      "ai_tool": [
+        [
+          {
+            "node": "Hígia (Modo Admin)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É o Dr. Cesar?": {
+      "main": [
+        []
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "America/Sao_Paulo"
+  },
+  "versionId": "71394ec2-d144-4768-876f-7fe4dbc4d95e",
+  "meta": {
+    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+  },
+  "id": "n00RczxB7ajgRSFj",
+  "tags": []
+}

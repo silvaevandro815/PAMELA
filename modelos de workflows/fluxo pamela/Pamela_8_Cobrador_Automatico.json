@@ -1,0 +1,210 @@
+{
+  "name": "cobrador",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -176
+      ],
+      "id": "f07241b6-7302-417f-b69e-61e2cd8b8cae",
+      "name": "Gatilho Diário"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT nome, telefone, plano_atual, data_vencimento FROM alunos WHERE status_pagamento = 'ATRASADO' OR data_vencimento <= CURRENT_DATE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -48,
+        -176
+      ],
+      "id": "32e6c37c-d2d4-449c-974d-cf51d933530e",
+      "name": "Buscar Inadimplentes",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        176,
+        -176
+      ],
+      "id": "c9aa49ff-5f06-4d78-a0fb-df9cf80116de",
+      "name": "Loop de Alunos"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        -176
+      ],
+      "id": "4989543b-e881-4059-b420-e2b0852fa24d",
+      "name": "Pausa Anti-Spam",
+      "webhookId": "pausa-anti-spam-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://polinara-evolution-api.vlzm0b.easypanel.host/message/sendText/higia-cesar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Loop de Alunos').item.json.telefone }}\",\n  \"text\": \"{{ $('Gerar Mensagem Alícia').item.json.message.content }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        -80
+      ],
+      "id": "68d7c533-2c93-471e-ad33-5612a9b9584a",
+      "name": "Enviar Cobrança WhatsApp"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "Você é a Alícia, assistente carinhosa e com forte espírito evangelístico da professora Pâmela Vieira. Sua tarefa é criar uma mensagem CURTA e amigável de lembrete de renovação de plano/mensalidade. Não use tom de cobrança agressiva. Agradeça pela vida do aluno, use jargões cristãos (ex: 'A paz!', 'Deus abençoe sua voz') e informe a chave PIX: sdmdigital7@gmail.com."
+            },
+            {
+              "content": "={{ $('Loop de Alunos').item.json.nome }}. O plano dele(a) é o {{ $('Loop de Alunos').item.json.plano_atual }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        -176
+      ],
+      "id": "026290ae-1e81-4533-b8ad-4da301a6842f",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yaVUTfYvY1wk9lHF",
+          "name": "OpenAI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gatilho Diário": {
+      "main": [
+        [
+          {
+            "node": "Buscar Inadimplentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Inadimplentes": {
+      "main": [
+        [
+          {
+            "node": "Loop de Alunos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop de Alunos": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pausa Anti-Spam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Cobrança WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Loop de Alunos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pausa Anti-Spam": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Enviar Cobrança WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3127b226-7bce-4e7b-9281-e11d2046a834",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"
+  },
+  "nodeGroups": [],
+  "id": "iC49R6OM0XLJfgpW",
+  "tags": []
+}
