@@ -43,6 +43,16 @@ export interface Transacao {
   data_vencimento: string;
   data_pagamento?: string;
   aluno_id?: string;
+  recorrente?: boolean;
+}
+
+export interface DespesaRecorrente {
+  id: string;
+  descricao: string;
+  valor: number;
+  categoria: string;
+  dia_vencimento: number; // Ex: 10 (todo dia 10)
+  ativo: boolean;
 }
 
 export interface AiInsight {

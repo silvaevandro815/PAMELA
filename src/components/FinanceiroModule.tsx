@@ -8,7 +8,11 @@ import {
   Plus, 
   Clock, 
   X,
-  PieChart as PieChartIcon
+  PieChart as PieChartIcon,
+  Repeat,
+  Trash2,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -17,16 +21,25 @@ import {
   Cell, 
   Tooltip 
 } from 'recharts';
-import { Transacao, TipoTransacao } from '@/types';
+import { Transacao, TipoTransacao, DespesaRecorrente } from '@/types';
+import { saveTransacaoDB, deleteTransacaoDB, saveDespesaRecorrenteDB } from '@/lib/supabase';
 
 interface FinanceiroModuleProps {
   transacoes: Transacao[];
   setTransacoes: React.Dispatch<React.SetStateAction<Transacao[]>>;
+  despesasRecorrentes: DespesaRecorrente[];
+  setDespesasRecorrentes: React.Dispatch<React.SetStateAction<DespesaRecorrente[]>>;
 }
 
-export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, setTransacoes }) => {
-  const [activeTab, setActiveTab] = useState<'TODOS' | 'RECEITAS' | 'DESPESAS' | 'CONTAS_A_PAGAR'>('TODOS');
+export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ 
+  transacoes, 
+  setTransacoes,
+  despesasRecorrentes,
+  setDespesasRecorrentes
+}) => {
+  const [activeTab, setActiveTab] = useState<'TODOS' | 'RECEITAS' | 'DESPESAS' | 'CONTAS_A_PAGAR' | 'RECORRENTES'>('TODOS');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRecorrenteModalOpen, setIsRecorrenteModalOpen] = useState(false);
 
   // New Transaction Form State
   const [descricao, setDescricao] = useState('');
@@ -35,6 +48,13 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
   const [categoria, setCategoria] = useState('Infraestrutura');
   const [status, setStatus] = useState<'PAGO' | 'PENDENTE'>('PENDENTE');
   const [dataVencimento, setDataVencimento] = useState(new Date().toISOString().split('T')[0]);
+  const [recorrente, setRecorrente] = useState(false);
+
+  // Recorrente Form State
+  const [recDescricao, setRecDescricao] = useState('');
+  const [recValor, setRecValor] = useState<number>(0);
+  const [recCategoria, setRecCategoria] = useState('Infraestrutura');
+  const [recDiaVencimento, setRecDiaVencimento] = useState<number>(10);
 
   // Financial Calculations
   const receitasPagas = transacoes
@@ -51,15 +71,20 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
     .filter(t => t.tipo === 'DESPESA' && t.status === 'PENDENTE')
     .reduce((acc, t) => acc + t.valor, 0);
 
+  // Total mensal despesas fixas recorrentes
+  const totalDespesasRecorrentesMensal = despesasRecorrentes
+    .filter(dr => dr.ativo)
+    .reduce((acc, dr) => acc + dr.valor, 0);
+
   // Expense Distribution Data
   const despesasPorCategoria = [
-    { name: 'Infraestrutura', value: 800, color: '#0E2A47' },
-    { name: 'Marketing & Ads', value: 350, color: '#C89A44' },
-    { name: 'Tecnologia', value: 120, color: '#8b5cf6' },
-    { name: 'Manutenção', value: 250, color: '#f59e0b' },
+    { name: 'Infraestrutura', value: transacoes.filter(t => t.categoria === 'Infraestrutura' && t.tipo === 'DESPESA').reduce((a, b) => a + b.valor, 0) || 800, color: '#0E2A47' },
+    { name: 'Marketing & Ads', value: transacoes.filter(t => t.categoria === 'Marketing' && t.tipo === 'DESPESA').reduce((a, b) => a + b.valor, 0) || 350, color: '#C89A44' },
+    { name: 'Tecnologia', value: transacoes.filter(t => t.categoria === 'Tecnologia' && t.tipo === 'DESPESA').reduce((a, b) => a + b.valor, 0) || 120, color: '#8b5cf6' },
+    { name: 'Manutenção', value: transacoes.filter(t => t.categoria === 'Manutenção' && t.tipo === 'DESPESA').reduce((a, b) => a + b.valor, 0) || 250, color: '#f59e0b' },
   ];
 
-  const handleAddTransacao = (e: React.FormEvent) => {
+  const handleAddTransacao = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!descricao || valor <= 0) return;
 
@@ -71,27 +96,59 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
       categoria,
       status,
       data_vencimento: dataVencimento,
-      data_pagamento: status === 'PAGO' ? new Date().toISOString().split('T')[0] : undefined
+      data_pagamento: status === 'PAGO' ? new Date().toISOString().split('T')[0] : undefined,
+      recorrente
     };
 
     setTransacoes([newTransacao, ...transacoes]);
+    await saveTransacaoDB(newTransacao);
+
     setDescricao('');
     setValor(0);
     setIsModalOpen(false);
   };
 
-  const handleToggleStatus = (id: string) => {
-    setTransacoes(transacoes.map(t => {
+  const handleAddDespesaRecorrente = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recDescricao || recValor <= 0) return;
+
+    const newRec: DespesaRecorrente = {
+      id: `dr-${Date.now()}`,
+      descricao: recDescricao,
+      valor: Number(recValor),
+      categoria: recCategoria,
+      dia_vencimento: recDiaVencimento,
+      ativo: true
+    };
+
+    setDespesasRecorrentes([...despesasRecorrentes, newRec]);
+    await saveDespesaRecorrenteDB(newRec);
+
+    setRecDescricao('');
+    setRecValor(0);
+    setIsRecorrenteModalOpen(false);
+  };
+
+  const handleToggleStatus = async (id: string) => {
+    const updatedTransacoes = transacoes.map(t => {
       if (t.id === id) {
-        const newStatus = t.status === 'PAGO' ? 'PENDENTE' : 'PAGO';
-        return {
+        const newStatus: 'PAGO' | 'PENDENTE' = t.status === 'PAGO' ? 'PENDENTE' : 'PAGO';
+        const updated = {
           ...t,
           status: newStatus,
           data_pagamento: newStatus === 'PAGO' ? new Date().toISOString().split('T')[0] : undefined
         };
+        saveTransacaoDB(updated);
+        return updated;
       }
       return t;
-    }));
+    });
+    setTransacoes(updatedTransacoes);
+  };
+
+  const handleDeleteTransacao = async (id: string) => {
+    setTransacoes(transacoes.filter(t => t.id !== id));
+    await deleteTransacaoDB(id);
   };
 
   const filteredTransacoes = transacoes.filter(t => {
@@ -106,17 +163,27 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
       {/* Header & Quick Action */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-[#0E2A47]">Fluxo de Caixa & Lançamentos</h1>
-          <p className="text-sm text-[#0E2A47]/70">Controle de receitas, custos operacionais e margem líquida</p>
+          <h1 className="text-2xl font-bold text-[#0E2A47]">Fluxo de Caixa & Gestão Autónoma</h1>
+          <p className="text-sm text-[#0E2A47]/70">Lançamento de despesas, contas recorrentes mensais e cálculo automático de lucro</p>
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center space-x-2 px-4 py-2.5 bg-[#C89A44] text-[#0E2A47] font-bold rounded-xl shadow-md hover:bg-[#b28639] transition-all text-xs"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Novo Lançamento</span>
-        </button>
+        <div className="flex items-center space-x-2 w-full sm:w-auto">
+          <button
+            onClick={() => setIsRecorrenteModalOpen(true)}
+            className="flex items-center space-x-2 px-3.5 py-2.5 bg-[#0E2A47] text-[#C89A44] font-bold rounded-xl shadow border border-[#C89A44]/30 hover:bg-[#153a61] transition-all text-xs"
+          >
+            <Repeat className="w-4 h-4 text-[#C89A44]" />
+            <span>Despesa Recorrente</span>
+          </button>
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2.5 bg-[#C89A44] text-[#0E2A47] font-bold rounded-xl shadow-md hover:bg-[#b28639] transition-all text-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Novo Lançamento</span>
+          </button>
+        </div>
       </div>
 
       {/* Financial Summary Cards */}
@@ -151,18 +218,18 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
           </p>
         </div>
 
-        <div className="bg-amber-50 p-5 rounded-2xl border border-amber-200 shadow-sm">
-          <div className="flex justify-between items-center text-amber-800 text-xs font-bold">
-            <span>Contas a Pagar (Abertas)</span>
-            <Clock className="w-4 h-4 text-amber-600" />
+        <div className="bg-purple-50 p-5 rounded-2xl border border-purple-200 shadow-sm">
+          <div className="flex justify-between items-center text-purple-900 text-xs font-bold">
+            <span>Custos Fixos Recorrentes</span>
+            <Repeat className="w-4 h-4 text-purple-600" />
           </div>
-          <p className="text-2xl font-extrabold text-amber-900 mt-2">
-            R$ {contasAPagarPendentes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          <p className="text-2xl font-extrabold text-purple-950 mt-2">
+            R$ {totalDespesasRecorrentesMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês
           </p>
         </div>
       </div>
 
-      {/* Expense PieChart Section */}
+      {/* Expense PieChart & Main Content Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Table Column */}
@@ -175,6 +242,7 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
               { id: 'RECEITAS', label: 'Receitas (Entradas)' },
               { id: 'DESPESAS', label: 'Despesas (Saídas)' },
               { id: 'CONTAS_A_PAGAR', label: '⚠️ Contas a Pagar' },
+              { id: 'RECORRENTES', label: '🔄 Custos Fixos Recorrentes' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -191,77 +259,117 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
           </div>
 
           {/* Transactions Table */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#0E2A47] text-white text-xs uppercase tracking-wider font-semibold">
-                    <th className="p-4">Descrição</th>
-                    <th className="p-4">Tipo</th>
-                    <th className="p-4">Categoria</th>
-                    <th className="p-4">Vencimento</th>
-                    <th className="p-4">Valor</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Ação</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 text-xs">
-                  {filteredTransacoes.length > 0 ? (
-                    filteredTransacoes.map(t => (
-                      <tr key={t.id} className="hover:bg-[#F5E9DA]/30 transition-colors">
-                        <td className="p-4 font-bold text-[#0E2A47]">{t.descricao}</td>
+          {activeTab !== 'RECORRENTES' ? (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#0E2A47] text-white text-xs uppercase tracking-wider font-semibold">
+                      <th className="p-4">Descrição</th>
+                      <th className="p-4">Tipo</th>
+                      <th className="p-4">Categoria</th>
+                      <th className="p-4">Vencimento</th>
+                      <th className="p-4">Valor</th>
+                      <th className="p-4">Status</th>
+                      <th className="p-4 text-right">Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 text-xs">
+                    {filteredTransacoes.length > 0 ? (
+                      filteredTransacoes.map(t => (
+                        <tr key={t.id} className="hover:bg-[#F5E9DA]/30 transition-colors">
+                          <td className="p-4 font-bold text-[#0E2A47]">
+                            <div className="flex items-center space-x-1.5">
+                              <span>{t.descricao}</span>
+                              {t.recorrente && (
+                                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-purple-100 text-purple-800 rounded">
+                                  Recorrente
+                                </span>
+                              )}
+                            </div>
+                          </td>
 
-                        <td className="p-4">
-                          <span className={`px-2 py-0.5 rounded font-extrabold text-[10px] ${
-                            t.tipo === 'RECEITA' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-                          }`}>
-                            {t.tipo}
-                          </span>
-                        </td>
+                          <td className="p-4">
+                            <span className={`px-2 py-0.5 rounded font-extrabold text-[10px] ${
+                              t.tipo === 'RECEITA' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                            }`}>
+                              {t.tipo}
+                            </span>
+                          </td>
 
-                        <td className="p-4 text-gray-600">{t.categoria}</td>
+                          <td className="p-4 text-gray-600">{t.categoria}</td>
 
-                        <td className="p-4 text-gray-500 font-medium">
-                          {new Date(t.data_vencimento).toLocaleDateString('pt-BR')}
-                        </td>
+                          <td className="p-4 text-gray-500 font-medium">
+                            {new Date(t.data_vencimento).toLocaleDateString('pt-BR')}
+                          </td>
 
-                        <td className="p-4 font-extrabold text-sm text-[#0E2A47]">
-                          R$ {t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </td>
+                          <td className="p-4 font-extrabold text-sm text-[#0E2A47]">
+                            R$ {t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </td>
 
-                        <td className="p-4">
-                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                            t.status === 'PAGO' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            {t.status === 'PAGO' ? 'PAGO / RECEBIDO' : 'PENDENTE'}
-                          </span>
-                        </td>
+                          <td className="p-4">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                              t.status === 'PAGO' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {t.status === 'PAGO' ? 'PAGO / RECEBIDO' : 'PENDENTE'}
+                            </span>
+                          </td>
 
-                        <td className="p-4 text-right">
-                          <button
-                            onClick={() => handleToggleStatus(t.id)}
-                            className={`px-3 py-1 text-[11px] font-bold rounded-lg transition-colors ${
-                              t.status === 'PAGO'
-                                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow'
-                            }`}
-                          >
-                            {t.status === 'PAGO' ? 'Marcar Pendente' : 'Confirmar Pgto'}
-                          </button>
+                          <td className="p-4 text-right space-x-1">
+                            <button
+                              onClick={() => handleToggleStatus(t.id)}
+                              className={`px-3 py-1 text-[11px] font-bold rounded-lg transition-colors ${
+                                t.status === 'PAGO'
+                                  ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow'
+                              }`}
+                            >
+                              {t.status === 'PAGO' ? 'Marcar Pendente' : 'Confirmar Pgto'}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTransacao(t.id)}
+                              className="p-1 text-gray-400 hover:text-rose-600 rounded"
+                              title="Excluir"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="p-8 text-center text-gray-400">
+                          Nenhum lançamento encontrado para a aba selecionada.
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="p-8 text-center text-gray-400">
-                        Nenhum lançamento encontrado para a aba selecionada.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Tab: Recorrentes Mensais */
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="font-bold text-[#0E2A47] text-sm">Custos Fixos Salvos na Memória do Painel</h3>
+                <span className="text-xs text-gray-500">Repetidos mensalmente automaticamente</span>
+              </div>
+
+              <div className="space-y-3">
+                {despesasRecorrentes.map(dr => (
+                  <div key={dr.id} className="p-4 bg-[#F5E9DA]/50 rounded-xl border border-[#C89A44]/30 flex justify-between items-center">
+                    <div>
+                      <h4 className="font-bold text-[#0E2A47] text-xs">{dr.descricao}</h4>
+                      <p className="text-[10px] text-gray-500">Vencimento todo dia {dr.dia_vencimento} • Categoria: {dr.categoria}</p>
+                    </div>
+                    <span className="font-extrabold text-[#0E2A47] text-sm">
+                      R$ {dr.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
         </div>
 
@@ -390,6 +498,19 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
                 </div>
               </div>
 
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="recorrente-check"
+                  checked={recorrente}
+                  onChange={(e) => setRecorrente(e.target.checked)}
+                  className="rounded border-gray-300 text-[#C89A44]"
+                />
+                <label htmlFor="recorrente-check" className="text-xs text-[#0E2A47] font-semibold cursor-pointer">
+                  Marcar como Despesa Recorrente Mensal
+                </label>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-[#0E2A47] mb-1">Data de Vencimento</label>
                 <input
@@ -412,13 +533,85 @@ export const FinanceiroModule: React.FC<FinanceiroModuleProps> = ({ transacoes, 
                   type="submit"
                   className="px-5 py-2 text-xs font-bold bg-[#C89A44] text-[#0E2A47] rounded-xl hover:bg-[#b28639] shadow-md"
                 >
-                  Salvar Lançamento
+                  Salvar no Supabase
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* Modal Nova Despesa Recorrente */}
+      {isRecorrenteModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-[#C89A44]/30 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="text-lg font-bold text-[#0E2A47]">Adicionar Custo Fixo Recorrente</h3>
+              <button onClick={() => setIsRecorrenteModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddDespesaRecorrente} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#0E2A47] mb-1">Descrição da Conta Fixa</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Aluguel do Estúdio / Tráfego Pago"
+                  value={recDescricao}
+                  onChange={(e) => setRecDescricao(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#0E2A47] mb-1">Valor Mensal (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    min={0}
+                    value={recValor}
+                    onChange={(e) => setRecValor(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#0E2A47] mb-1">Dia do Vencimento</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={31}
+                    value={recDiaVencimento}
+                    onChange={(e) => setRecDiaVencimento(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIsRecorrenteModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 text-xs font-bold bg-[#C89A44] text-[#0E2A47] rounded-xl hover:bg-[#b28639] shadow-md"
+                >
+                  Salvar Recorrência
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

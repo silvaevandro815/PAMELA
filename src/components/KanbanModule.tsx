@@ -23,6 +23,7 @@ import {
   Cell 
 } from 'recharts';
 import { Lead, StatusLead, PlanoType } from '@/types';
+import { updateLeadStatusDB, saveLeadDB } from '@/lib/supabase';
 
 interface KanbanModuleProps {
   leads: Lead[];
@@ -47,23 +48,27 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
   const [interesse, setInteresse] = useState<PlanoType>('Mentoria Individual');
   const [notas, setNotas] = useState('');
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
     if (!destination) return;
     if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
+    const newStatus = destination.droppableId as StatusLead;
     const updatedLeads = Array.from(leads);
     const targetLead = updatedLeads.find(l => l.id === draggableId);
 
     if (targetLead) {
-      targetLead.status_venda = destination.droppableId as StatusLead;
+      targetLead.status_venda = newStatus;
       targetLead.data_ultimo_contato = new Date().toISOString();
       setLeads(updatedLeads);
+
+      // Persist to Supabase
+      await updateLeadStatusDB(targetLead.id, newStatus);
     }
   };
 
-  const handleAddLead = (e: React.FormEvent) => {
+  const handleAddLead = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nome || !telefone) return;
 
@@ -74,10 +79,13 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
       interesse,
       status_venda: 'Novos Contatos',
       data_ultimo_contato: new Date().toISOString(),
-      notas
+      notas,
+      valor_estimado: interesse === 'Masterclass' ? 2500 : interesse === 'Aula em Grupo' ? 200 : 150
     };
 
     setLeads([newLead, ...leads]);
+    await saveLeadDB(newLead);
+
     setNome('');
     setTelefone('');
     setNotas('');
@@ -107,7 +115,7 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-[#0E2A47]">Funil de Vendas & CRM de Leads</h1>
-          <p className="text-sm text-[#0E2A47]/70">Acompanhamento e conversão automatizada do primeiro contato até o fechamento</p>
+          <p className="text-sm text-[#0E2A47]/70">Arraste os cards para atualizar o status no Supabase em tempo real</p>
         </div>
 
         <div className="flex items-center space-x-3 w-full sm:w-auto">
@@ -115,7 +123,7 @@ export const KanbanModule: React.FC<KanbanModuleProps> = ({ leads, setLeads }) =
             <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input
               type="text"
-              placeholder="Buscar lead por nome ou fone..."
+              placeholder="Buscar lead por nome..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-xs bg-[#F5E9DA]/50 rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"

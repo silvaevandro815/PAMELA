@@ -1,0 +1,94 @@
+2026-Jul-25 17:20:19.845188 Docker 29.5.2 with BuildKit and Buildx detected on deployment server (localhost).
+2026-Jul-25 17:20:19.854967 Starting deployment of silvaevandro815/PAMELA:main to localhost.
+2026-Jul-25 17:20:20.038883 Preparing container with helper image: ghcr.io/coollabsio/coolify-helper:1.0.14
+2026-Jul-25 17:24:22.895585 Image not found (ys4z9dzvy0q9z6zhu7udkwko:4c00ab3c1ee2bfa92e115f05998654f807cedf01). Building new image.
+2026-Jul-25 17:24:22.907480 ----------------------------------------
+2026-Jul-25 17:24:22.915731 Importing silvaevandro815/PAMELA:main (commit sha 4c00ab3c1ee2bfa92e115f05998654f807cedf01) to /artifacts/bj2gkkc4fby18v8csj9zkzhp.
+2026-Jul-25 17:24:30.567897 Generating nixpacks configuration with: nixpacks plan -f json --env 'NIXPACKS_NODE_VERSION=22' --env 'COOLIFY_URL=https://crm-pamela.evandrosilvagallina.cloud' --env 'COOLIFY_FQDN=crm-pamela.evandrosilvagallina.cloud' --env 'COOLIFY_BRANCH=main' --env 'COOLIFY_RESOURCE_UUID=ys4z9dzvy0q9z6zhu7udkwko' /artifacts/bj2gkkc4fby18v8csj9zkzhp
+2026-Jul-25 17:24:30.953704 Found application type: node.
+2026-Jul-25 17:24:30.961450 If you need further customization, please check the documentation of Nixpacks: https://nixpacks.com/docs/providers/node
+2026-Jul-25 17:24:31.687243 ----------------------------------------
+2026-Jul-25 17:24:31.697738 Building docker image started.
+2026-Jul-25 17:24:31.705172 To check the current progress, click on Show Debug Logs.
+2026-Jul-25 17:26:42.501844 ========================================
+2026-Jul-25 17:26:42.517003 Deployment failed: Command execution failed (exit code 1): docker exec bj2gkkc4fby18v8csj9zkzhp bash -c 'bash /artifacts/build.sh'
+2026-Jul-25 17:26:42.517003 Error: #0 building with "default" instance using docker driver
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #1 [internal] load build definition from Dockerfile
+2026-Jul-25 17:26:42.517003 #1 transferring dockerfile: 1.59kB 0.0s done
+2026-Jul-25 17:26:42.517003 #1 DONE 0.1s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #2 [internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+2026-Jul-25 17:26:42.517003 #2 DONE 2.6s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #3 [internal] load .dockerignore
+2026-Jul-25 17:26:42.517003 #3 transferring context: 2B done
+2026-Jul-25 17:26:42.517003 #3 DONE 0.0s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #4 [stage-0 1/11] FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+2026-Jul-25 17:26:42.517003 #4 resolve ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de 0.0s done
+2026-Jul-25 17:26:42.517003 #4 DONE 0.2s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #5 [internal] load build context
+2026-Jul-25 17:26:42.517003 #5 ...
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #6 [stage-0 2/11] WORKDIR /app/
+2026-Jul-25 17:26:42.517003 #6 DONE 0.2s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #5 [internal] load build context
+2026-Jul-25 17:26:42.517003 #5 transferring context: 69.70MB 0.8s done
+2026-Jul-25 17:26:42.517003 #5 DONE 0.8s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #7 [stage-0 3/11] COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix
+2026-Jul-25 17:26:42.517003 #7 DONE 0.1s
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 #8 [stage-0 4/11] RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d
+2026-Jul-25 17:26:42.517003 #8 0.805 unpacking 'https://github.com/NixOS/nixpkgs/archive/ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.tar.gz' into the Git cache...
+2026-Jul-25 17:26:42.517003 #8 72.60 unpacking 'https:<REDACTED>@0.1.0
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error Found: react@19.2.8
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error node_modules/react
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error react@"^19.0.0" from the root project
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error Could not resolve dependency:
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error peer react@"^18.0.0" from @hello-pangea/dnd@17.0.0
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error node_modules/@hello-pangea/dnd
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error @hello-pangea/dnd@"^17.0.0" from the root project
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error Fix the upstream dependency conflict, or retry
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error this command with --force or --legacy-peer-deps
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error to accept an incorrect (and potentially broken) dependency resolution.
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error For a full report see:
+2026-Jul-25 17:26:42.517003 #11 1.930 npm error /root/.npm/_logs/2026-07-25T17_26_40_485Z-eresolve-report.txt
+2026-Jul-25 17:26:42.517003 #11 1.932 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-07-25T17_26_40_485Z-debug-0.log
+2026-Jul-25 17:26:42.517003 #11 ERROR: process "/bin/bash -ol pipefail -c npm i" did not complete successfully: exit code: 1
+2026-Jul-25 17:26:42.517003 ------
+2026-Jul-25 17:26:42.517003 > [stage-0 7/11] RUN --mount=type=cache,id=ys4z9dzvy0q9z6zhu7udkwko-/root/npm,target=/root/.npm npm i:
+2026-Jul-25 17:26:42.517003 1.930 npm error @hello-pangea/dnd@"^17.0.0" from the root project
+2026-Jul-25 17:26:42.517003 1.930 npm error
+2026-Jul-25 17:26:42.517003 1.930 npm error Fix the upstream dependency conflict, or retry
+2026-Jul-25 17:26:42.517003 1.930 npm error this command with --force or --legacy-peer-deps
+2026-Jul-25 17:26:42.517003 1.930 npm error to accept an incorrect (and potentially broken) dependency resolution.
+2026-Jul-25 17:26:42.517003 1.930 npm error
+2026-Jul-25 17:26:42.517003 1.930 npm error
+2026-Jul-25 17:26:42.517003 1.930 npm error For a full report see:
+2026-Jul-25 17:26:42.517003 1.930 npm error /root/.npm/_logs/2026-07-25T17_26_40_485Z-eresolve-report.txt
+2026-Jul-25 17:26:42.517003 1.932 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-07-25T17_26_40_485Z-debug-0.log
+2026-Jul-25 17:26:42.517003 ------
+2026-Jul-25 17:26:42.517003
+2026-Jul-25 17:26:42.517003 1 warning found (use docker --debug to expand):
+2026-Jul-25 17:26:42.517003 - UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 18)
+2026-Jul-25 17:26:42.517003 Dockerfile:20
+2026-Jul-25 17:26:42.517003 --------------------
+2026-Jul-25 17:26:42.517003 18 | ENV NIXPACKS_PATH=/app/node_modules/.bin:$NIXPACKS_PATH
+2026-Jul-25 17:26:42.517003 19 | COPY . /app/.
+2026-Jul-25 17:26:42.517003 20 | >>> RUN --mount=type=cache,id=ys4z9dzvy0q9z6zhu7udkwko-/root/npm,target=/root/.npm npm i
+2026-Jul-25 17:26:42.517003 21 |
+2026-Jul-25 17:26:42.517003 22 | # build phase
+2026-Jul-25 17:26:42.517003 --------------------
+2026-Jul-25 17:26:42.517003 ERROR: failed to build: failed to solve: process "/bin/bash -ol pipefail -c npm i" did not complete successfully: exit code: 1
+2026-Jul-25 17:26:42.517003 exit status 1
+2026-Jul-25 17:26:42.734129 ========================================
+2026-Jul-25 17:26:42.748121 Deployment failed. Removing the new version of your application.
+2026-Jul-25 17:26:43.156070 Gracefully shutting down build container: bj2gkkc4fby18v8csj9zkzhp

@@ -8,10 +8,12 @@ import {
   ShieldAlert, 
   Edit3, 
   X,
-  Eye
+  Eye,
+  CheckCircle2
 } from 'lucide-react';
 import { Aluno, PlanoType, StatusPagamento } from '@/types';
 import { AlunoDetailDrawer } from '@/components/AlunoDetailDrawer';
+import { saveAlunoDB } from '@/lib/supabase';
 
 interface AlunosModuleProps {
   alunos: Aluno[];
@@ -70,13 +72,15 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
     setIsModalOpen(true);
   };
 
-  const handleSaveAluno = (e: React.FormEvent) => {
+  const handleSaveAluno = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nome || !telefone) return;
 
+    let targetAluno: Aluno;
+
     if (editingAluno) {
-      setAlunos(alunos.map(a => a.id === editingAluno.id ? {
-        ...a,
+      targetAluno = {
+        ...editingAluno,
         nome,
         telefone,
         data_nascimento: dataNascimento,
@@ -84,9 +88,10 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
         creditos_ativos: creditosAtivos,
         status_pagamento: statusPagamento,
         data_vencimento: dataVencimento
-      } : a));
+      };
+      setAlunos(alunos.map(a => a.id === editingAluno.id ? targetAluno : a));
     } else {
-      const newAluno: Aluno = {
+      targetAluno = {
         id: `aluno-${Date.now()}`,
         user_id: telefone.replace(/\D/g, ''),
         nome,
@@ -95,22 +100,30 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
         plano_atual: planoAtual,
         creditos_ativos: creditosAtivos,
         status_pagamento: statusPagamento,
-        data_vencimento: dataVencimento || new Date().toISOString().split('T')[0]
+        data_vencimento: dataVencimento || new Date().toISOString().split('T')[0],
+        nivel_cp12: 'Nível 1 - Destravamento Vocal',
+        extensao_vocal: 'Avaliando',
+        observacoes_pedagogicas: 'Aluno cadastrado no sistema do Método CP12.'
       };
-      setAlunos([newAluno, ...alunos]);
+      setAlunos([targetAluno, ...alunos]);
     }
 
+    // Persist to Supabase
+    await saveAlunoDB(targetAluno);
     setIsModalOpen(false);
   };
 
-  const handleAdjustCreditos = (id: string, delta: number) => {
-    setAlunos(alunos.map(a => {
+  const handleAdjustCreditos = async (id: string, delta: number) => {
+    const updatedAlunos = alunos.map(a => {
       if (a.id === id) {
         const newCount = Math.max(0, a.creditos_ativos + delta);
-        return { ...a, creditos_ativos: newCount };
+        const updated = { ...a, creditos_ativos: newCount };
+        saveAlunoDB(updated); // Persist async
+        return updated;
       }
       return a;
-    }));
+    });
+    setAlunos(updatedAlunos);
   };
 
   const filteredAlunos = alunos.filter(a => {
@@ -125,7 +138,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-[#0E2A47]">Gestão de Alunos (Método CP12)</h1>
-          <p className="text-sm text-[#0E2A47]/70">Controle pedagógico, créditos de aula e triagem de maioridade</p>
+          <p className="text-sm text-[#0E2A47]/70">Controle pedagógico com persistência em tempo real no Supabase</p>
         </div>
 
         <button
@@ -441,7 +454,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                   type="submit"
                   className="px-5 py-2 text-xs font-bold bg-[#C89A44] text-[#0E2A47] rounded-xl hover:bg-[#b28639] shadow-md"
                 >
-                  Salvar Cadastro
+                  Salvar e Persistir
                 </button>
               </div>
             </form>
