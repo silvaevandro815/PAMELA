@@ -11,7 +11,7 @@
         224,
         512
       ],
-      "id": "ed64894f-de35-478a-89ea-61db076738f1",
+      "id": "e7bce5ca-1856-427d-a720-d1b44b47f6c3",
       "name": "[MCP Server] Google Calendar",
       "webhookId": "a2b7a3ee-767c-4689-a8fa-765080bea169"
     },
@@ -19,8 +19,9 @@
       "parameters": {
         "calendar": {
           "__rl": true,
-          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
-          "mode": "id"
+          "value": "cantopamelavieira@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cantopamelavieira@gmail.com"
         },
         "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
         "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
@@ -35,12 +36,12 @@
         128,
         720
       ],
-      "id": "84039acf-c75e-4654-bb09-9647d515a25c",
+      "id": "bcb5bc2d-cafd-4d67-bac5-f08bcfb712de",
       "name": "Criar evento",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "7juWTOZ4Pu22tVl5",
-          "name": "Google Calendar account"
+          "id": "9WraAijPxtf2EEeb",
+          "name": "AGENCIA"
         }
       }
     },
@@ -49,8 +50,9 @@
         "operation": "delete",
         "calendar": {
           "__rl": true,
-          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
-          "mode": "id"
+          "value": "cantopamelavieira@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cantopamelavieira@gmail.com"
         },
         "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
         "options": {}
@@ -61,12 +63,12 @@
         912,
         720
       ],
-      "id": "8d6c513f-34a1-4d29-92f0-66d8a7803872",
+      "id": "ef62dceb-77c1-4941-aab2-c51185adcf6f",
       "name": "Deletar evento",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "7juWTOZ4Pu22tVl5",
-          "name": "Google Calendar account"
+          "id": "9WraAijPxtf2EEeb",
+          "name": "AGENCIA"
         }
       }
     },
@@ -75,8 +77,9 @@
         "operation": "get",
         "calendar": {
           "__rl": true,
-          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
-          "mode": "id"
+          "value": "cantopamelavieira@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cantopamelavieira@gmail.com"
         },
         "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
         "options": {}
@@ -87,12 +90,12 @@
         304,
         720
       ],
-      "id": "bcf5d8ee-5252-493f-bdb8-04b5d0114e38",
+      "id": "a52eac84-be9c-45ec-b44d-0227be3399fd",
       "name": "Buscar evento",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "7juWTOZ4Pu22tVl5",
-          "name": "Google Calendar account"
+          "id": "9WraAijPxtf2EEeb",
+          "name": "AGENCIA"
         }
       }
     },
@@ -103,8 +106,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
-          "mode": "id"
+          "value": "cantopamelavieira@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cantopamelavieira@gmail.com"
         },
         "returnAll": true,
         "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
@@ -117,12 +121,12 @@
         512,
         720
       ],
-      "id": "336e9708-8994-4d99-a717-b1f187d58ba3",
+      "id": "9be41bcd-04cf-4da0-8874-779bd9fb3dae",
       "name": "Buscar todos os eventos",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "7juWTOZ4Pu22tVl5",
-          "name": "Google Calendar account"
+          "id": "9WraAijPxtf2EEeb",
+          "name": "AGENCIA"
         }
       }
     },
@@ -131,8 +135,9 @@
         "operation": "update",
         "calendar": {
           "__rl": true,
-          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
-          "mode": "id"
+          "value": "cantopamelavieira@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cantopamelavieira@gmail.com"
         },
         "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
         "updateFields": {
@@ -148,12 +153,12 @@
         704,
         720
       ],
-      "id": "46cfe7e9-ad16-4db3-be2e-1bea86747889",
+      "id": "f2fea8fc-60b7-4772-ad51-805d0dc24b7d",
       "name": "Atualizar evento",
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "7juWTOZ4Pu22tVl5",
-          "name": "Google Calendar account"
+          "id": "9WraAijPxtf2EEeb",
+          "name": "AGENCIA"
         }
       }
     },
@@ -170,7 +175,7 @@
         0,
         0
       ],
-      "id": "4902420d-3678-457a-9b3c-9e4ccde0640e",
+      "id": "98f84355-13ae-4737-9ed4-e0df697ee2c8",
       "name": "Sticky Note10"
     },
     {
@@ -186,7 +191,7 @@
         560,
         0
       ],
-      "id": "1f8069eb-33f1-4c4b-a224-3340cd1be896",
+      "id": "1536a6ba-13a4-401d-bf70-b51455798fc9",
       "name": "Sticky Note13"
     },
     {
@@ -202,7 +207,7 @@
         224,
         304
       ],
-      "id": "6ea9166d-4647-4b34-a945-c377c27f9369",
+      "id": "ce4206a0-e3c4-45b3-aa92-ece3348bf5e1",
       "name": "Sticky Note"
     }
   ],
@@ -264,18 +269,17 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false,
-    "timeSavedMode": "fixed",
-    "timezone": "America/Sao_Paulo",
-    "callerPolicy": "workflowsFromSameOwner"
+    "binaryMode": "separate"
   },
-  "versionId": "f4837400-92e6-43a9-9e8c-fc39327c74bb",
+  "versionId": "8a8f3626-5dd8-4a52-b1fc-bdd2a24c40ed",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+    "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"
   },
+  "nodeGroups": [],
+  "id": "vPR6a56BPCpbyGh2",
   "tags": []
 }

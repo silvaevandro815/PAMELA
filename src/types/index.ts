@@ -1,4 +1,4 @@
-export type PlanoType = 'Mentoria Individual' | 'Aula em Grupo' | 'Masterclass';
+export type PlanoType = 'MasterClass' | 'Aula em Grupo' | 'Mentoria Individual';
 
 export type StatusPagamento = 'EM DIA' | 'PENDENTE' | 'ATRASADO';
 
@@ -51,7 +51,7 @@ export interface DespesaRecorrente {
   descricao: string;
   valor: number;
   categoria: string;
-  dia_vencimento: number; // Ex: 10 (todo dia 10)
+  dia_vencimento: number;
   ativo: boolean;
 }
 

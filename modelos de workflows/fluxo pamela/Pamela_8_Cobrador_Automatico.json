@@ -1,5 +1,5 @@
 {
-  "name": "cobrador",
+  "name": "Pamela 8 - Cobrador",
   "nodes": [
     {
       "parameters": {
@@ -72,7 +72,9 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://polinara-evolution-api.vlzm0b.easypanel.host/message/sendText/higia-cesar",
+        "url": "https://evolution.evandrosilvagallina.cloud/message/sendText/Pamela",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "evolutionApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"number\": \"{{ $('Loop de Alunos').item.json.telefone }}\",\n  \"text\": \"{{ $('Gerar Mensagem Alícia').item.json.message.content }}\"\n}",
@@ -85,7 +87,13 @@
         -80
       ],
       "id": "68d7c533-2c93-471e-ad33-5612a9b9584a",
-      "name": "Enviar Cobrança WhatsApp"
+      "name": "Enviar Cobrança WhatsApp",
+      "credentials": {
+        "evolutionApi": {
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
+        }
+      }
     },
     {
       "parameters": {
@@ -98,7 +106,7 @@
         "responses": {
           "values": [
             {
-              "content": "Você é a Alícia, assistente carinhosa e com forte espírito evangelístico da professora Pâmela Vieira. Sua tarefa é criar uma mensagem CURTA e amigável de lembrete de renovação de plano/mensalidade. Não use tom de cobrança agressiva. Agradeça pela vida do aluno, use jargões cristãos (ex: 'A paz!', 'Deus abençoe sua voz') e informe a chave PIX: sdmdigital7@gmail.com."
+              "content": "Você é a Alícia, assistente da professora Pâmela Vieira. Sua tarefa é criar uma mensagem CURTA e educada de lembrete de continuidade das aulas nesse novo mês. Não use tom de cobrança agressiva, mas de incentivo de continuidade. Agradeça pela parceria do aluno, tenha um tom profissional e afetuoso (SEM linguagem cristã ou religiosa) e informe a chave PIX: sdmdigital7@gmail.com , queira continuar com as aulas."
             },
             {
               "content": "={{ $('Loop de Alunos').item.json.nome }}. O plano dele(a) é o {{ $('Loop de Alunos').item.json.plano_atual }}"
@@ -115,7 +123,7 @@
         -176
       ],
       "id": "026290ae-1e81-4533-b8ad-4da301a6842f",
-      "name": "Message a model",
+      "name": "Gerar Mensagem Alícia",
       "credentials": {
         "openAiApi": {
           "id": "yaVUTfYvY1wk9lHF",
@@ -175,14 +183,14 @@
       "main": [
         [
           {
-            "node": "Message a model",
+            "node": "Gerar Mensagem Alícia",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Message a model": {
+    "Gerar Mensagem Alícia": {
       "main": [
         [
           {
@@ -199,7 +207,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "3127b226-7bce-4e7b-9281-e11d2046a834",
+  "versionId": "57ae8450-1878-490f-9e34-03250388fcec",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"

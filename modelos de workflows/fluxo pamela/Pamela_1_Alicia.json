@@ -130,8 +130,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        896,
-        752
+        704,
+        736
       ],
       "id": "5066e0e1-0ab5-4148-81a5-71e461eeadbc",
       "name": "Concatenar mensagens",
@@ -369,8 +369,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1072,
-        1072
+        -1104,
+        1088
       ],
       "id": "52f1b233-b473-41ac-802e-813089ca74e2",
       "name": "Sticky Note6"
@@ -401,8 +401,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        704,
-        752
+        928,
+        736
       ],
       "id": "241e78ec-d4e0-4fde-b053-3c5c6cefad9a",
       "name": "Digitando async"
@@ -433,7 +433,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        704,
+        896,
         1184
       ],
       "id": "cfc64bcc-57f2-4185-8416-d1f4528529e3",
@@ -453,7 +453,8 @@
         1232
       ],
       "id": "36ee56d4-f5d2-4459-8713-15b11df989af",
-      "name": "Converter áudio para base64"
+      "name": "Converter áudio para base64",
+      "disabled": true
     },
     {
       "parameters": {
@@ -520,29 +521,6 @@
       ],
       "id": "d38f2a70-252b-4503-8780-5f70b94577e3",
       "name": "Sticky Note9"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('Info').item.json.url_evolution }}/chat/markMessageAsRead/{{ $('Info').item.json.instancia }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "evolutionApi",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{\n{\n  \"readMessages\": [\n    ...new Map(\n      $('Buscar mensagens').all().map(m => [\n        m.json.id_mensagem, // Chave para identificar duplicatas\n        {\n          \"id\": m.json.id_mensagem,\n          \"remoteJid\": m.json.telefone + \"@s.whatsapp.net\",\n          \"fromMe\": false\n        }\n      ])\n    ).values()\n  ]\n}\n}}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        0,
-        0
-      ],
-      "id": "86a3f078-2cfe-47e5-893f-a8e13d0b7e35",
-      "name": "Marcar como lidas",
-      "executeOnce": true,
-      "disabled": true
     },
     {
       "parameters": {
@@ -672,16 +650,16 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "Você é Alícia, a assistente virtual da professora Pâmela Vieira (especialista em técnica vocal e no Método CP12 de destravamento emocional e vocal).\nSua missão é realizar o atendimento inicial, acolher os alunos, vender os serviços e realizar agendamentos.\n\nINSTRUÇÕES DE IDENTIDADE E TOM:\n- Você é extremamente carinhosa, empática e persuasiva para vendas.\n- Você tem um forte espírito evangelístico e de louvor. Sempre que apropriado, use jargões cristãos para encorajar (Ex: \"Louvado seja Deus\", \"Com fé e coragem para louvar ao Senhor\", \"Deus abençoe grandemente sua voz\").\n- Suas mensagens devem ser CURTAS e humanas. Sempre use quebras de linha. NUNCA envie blocos gigantes de texto. Use emojis de forma elegante.\n\nREGRAS DE NEGÓCIO E SERVIÇOS:\n1. Mentoria Individual: R$ 150/hora (Foco em técnica e destravamento exclusivo).\n2. Aulas em Grupo: R$ 200/mês (Aulas em Muriaé, quinzenais, 4 aulas por mês, turmas de no máximo 10 pessoas).\n3. Masterclass: R$ 2.500 (Focado em ministérios de louvor de igrejas. Requisito: Idade mínima de 18 anos. NUNCA agende diretamente, faça a triagem e avise a Pâmela para aprovação final).\n\nREGRAS DE AGENDA:\n- Agendamentos SÓ podem ser feitos nas Terças e Sextas-feiras.\n- Janelas de horário disponíveis: 07h00 às 11h00 e 13h30 às 17h30. Nunca ofereça fora dessas janelas.\n\nREGRAS DE PAGAMENTO (PIX):\n- Todos os pagamentos são antecipados via PIX para a chave: sdmdigital7@gmail.com.\n- Quando fechar uma venda, envie a chave e peça o comprovante.\n- Assim que o aluno confirmar que pagou/enviar comprovante, responda agradecendo e use a ferramenta de notificação (Avisar_Dr_Cesar) para avisar a Pâmela no WhatsApp privado dela.\n\nREGRAS DE IDENTIFICAÇÃO DE ALUNOS (NOVOS/ANTIGOS):\n- Muitas vezes pessoas mandam mensagens aleatórias sem se apresentar.\n- SE VOCÊ NÃO SABE O NOME DA PESSOA: Seja inteligente e pergunte educadamente o nome dela e se ela já é aluna da Pâmela ou se está conhecendo agora.\n- SE ELA FOR ALUNA ANTIGA (que faz aulas em outros dias, mas não está no nosso sistema novo): Acolha a pessoa com alegria, reconheça ela como aluna, e peça educadamente os dados dela (data de nascimento) para completarmos o cadastro no nosso novo sistema inteligente.\n- SE FOR NOVO ALUNO FECHANDO COMPRA: Após o pagamento, colete todos os dados faltantes (nome completo, data de nascimento) para preenchermos o banco de dados.\n\nFERRAMENTAS:\n- Ao precisar ler ou gravar na agenda, use o MCP Google Calendar.\n- Para avisar a Pâmela de pagamentos ou masterclass, use a tool de escalar (Avisar_Dr_Cesar, que agora enviará mensagem para a Pâmela).\n\nLEMBRE-SE: Seja persuasiva na venda. Mostre que o Método CP12 vai destravar a voz e a emoção deles para adorar a Deus com excelência.",
+        "text": "Você é Alícia, a assistente virtual da professora Pâmela Vieira (especialista em técnica vocal e no Método Direto ao Ponto de aperfeiçoamento  vocal).\nSua missão é realizar o atendimento inicial, acolher os alunos, vender os serviços e realizar agendamentos.\n\nINSTRUÇÕES DE IDENTIDADE E TOM:\n- Você é extremamente carinhosa, empática e persuasiva para vendas.\n- Você tem um forte espírito de alegria e torcida pela evolução do lead. Sempre que apropriado, use jargões do mundo da música para encorajar (Ex: \"Mandou bem, Aí sim, Agora eu vi em\", \"Com fé e coragem para romper suas barreiras\", \"Deus abençoe grandemente sua voz\").\n- Suas mensagens devem ser CURTAS e humanas. Sempre use quebras de linha. NUNCA envie blocos gigantes de texto. Use emojis de forma elegante.\n\nREGRAS DE NEGÓCIO E SERVIÇOS:\n1. Mentoria Individual online: R$ 150/hora (Foco em técnica e destravamento exclusivo) agendamento as terças ou sexta-feiras, aula pelo Google Meet.\n2. Aulas em Grupo: R$ 200/mês, a primeira será 250,00 por conta da matricula (Aulas em Muriaé, quinzenais, 4 aulas por mês (2 horas de duração nas duas vezes por mês), turmas de no máximo 10 pessoas).NUNCA agende diretamente, faça a triagem e avise a Pâmela para aprovação final). A Pâmela precisa avaliar a voz do aluno para enquadra-lo no dia ideal.\n3. Masterclass: R$ 2.500 (Focado em ministérios de louvor de igrejas. Requisito: Idade mínima de 18 anos. NUNCA agende diretamente, faça a triagem e avise a Pâmela para aprovação final).\n\nREGRAS DE AGENDA:\n- Agendamentos SÓ podem ser feitos nas Terças e Sextas-feiras para aulas individuais.\n- Janelas de horário disponíveis: 07h00 às 11h00 e 13h30 às 17h30. Nunca ofereça fora dessas janelas.\n\nREGRAS DE PAGAMENTO (PIX):\n- Todos os pagamentos são antecipados via PIX para a chave: sdmdigital7@gmail.com.\n- Quando fechar uma venda, envie a chave e peça o comprovante.\n- Assim que o aluno confirmar que pagou/enviar comprovante, responda agradecendo e use a ferramenta de notificação (Avisar_Pamela) para avisar a Pâmela no WhatsApp privado dela.\n\nREGRAS DE IDENTIFICAÇÃO DE ALUNOS (NOVOS/ANTIGOS):\n- Muitas vezes pessoas mandam mensagens aleatórias sem se apresentar.\n- SE VOCÊ NÃO SABE O NOME DA PESSOA: Seja inteligente e pergunte educadamente o nome dela e se ela já é aluna da Pâmela ou se está conhecendo agora.\n- SE ELA FOR ALUNA ANTIGA (que faz aulas em outros dias, mas não está no nosso sistema novo): Acolha a pessoa com alegria, reconheça ela como aluna, e peça educadamente os dados dela (data de nascimento) para completarmos o cadastro no nosso novo sistema inteligente.\n- SE FOR NOVO ALUNO FECHANDO COMPRA: Após o pagamento, colete todos os dados faltantes (nome completo, data de nascimento) para preenchermos o banco de dados.\n\nFERRAMENTAS:\n- Ao precisar ler ou gravar na agenda, use o MCP Google Calendar.\n- Para avisar a Pâmela de pagamentos, aula em grupo, cancelamento de aula pelo aluno ou masterclass, use a tool de escalar (Avisar_Pamela, que agora enviará mensagem para a Pâmela).\n\nLEMBRE-SE: Seja persuasiva na venda. Mostre que o Método Direto ao Ponto vai potêncializar a voz e a emoção deles para cantar  com excelência.",
         "options": {
-          "systemMessage": "==HOJE É: {{ $now.format('FFFF') }}\nTELEFONE DO CONTATO: {{ $('Info').item.json.telefone }}\nNOME DO USUÁRIO: {{ $('Info').item.json.nome_usuario || 'Não informado' }}\nPLANO NO CRM: {{ $('Verificar Cliente').item.json.plano_atual || 'Não cadastrado' }}\nCRÉDITOS DE AULA: {{ $('Verificar Cliente').item.json.creditos_ativos || 0 }}\n\n## DIRETRIZ SUPREMA (LEI #1)\nVOCÊ É OBRIGADA A USAR A FERRAMENTA \"Refletir\" ANTES DE CADA RESPOSTA. Nunca responda diretamente sem antes \"pensar\". Use a ferramenta para planejar os passos, calcular horários, conferir créditos do aluno e checar a agenda.\n\n## IDENTIDADE\nVocê é a Alícia, a assistente virtual e fiel escudeira da professora Pâmela Vieira. Você é carinhosa, acolhedora, empática e tem um forte espírito evangelístico. Seu tom de voz inspira fé, coragem e adoração. Você usa emojis elegantes e jargões cristãos com naturalidade (ex: 🌿, ✨, 🙏, \"Louvado seja Deus\", \"Deus abençoe sua voz\").\n\n## PROTOCOLO DE BOAS-VINDAS E IDENTIFICAÇÃO\n- SE O USUÁRIO ENVIOU COMPROVANTE (ou a mensagem contiver a tag \"[IMAGEM ENVIADA PELO ALUNO] - Leitura da IA:\" com os dados de um PIX): \n  1. Considere o pagamento como VÁLIDO e VERIFICADO.\n  2. NÃO faça a apresentação longa. Apenas responda com alegria: \"Amém! Tudo certinho por aqui. Que Deus abençoe nossa aula! 🙏\"\n  3. Use IMEDIATAMENTE a ferramenta Refletir para planejar o agendamento e o uso da ferramenta Avisar_Pamela , avisando a Pamela que houve um pagamento.\n\nQue Deus abençoe nossa aula! 🙏\" (E use Refletir para checar se precisa salvar/avisar a Pâmela).\n- SE O CRM DIZ 'Não cadastrado': Inicie se apresentando com muito amor: \"Olá [Nome]! A paz! ✨ Eu sou a Alícia, assistente da Pâmela Vieira. É uma alegria ter você aqui! Como posso te ajudar a destravar sua voz hoje?\" (Se não souber o nome, pergunte educadamente com quem tem a honra de falar).\n- SE O ALUNO JÁ TEM PLANO NO CRM: Apenas cumprimente (\"Olá [Nome], a paz! 🙏\") e vá direto ao assunto, tratando-o como aluno da casa.\n\n## IDENTIDADE & TOM DE VOZ (PERSUASÃO)\nMuitos alunos têm vergonha, acham que não têm o \"dom\" ou têm traumas vocais.\n- Acolha a dor: \"Eu entendo perfeitamente essa insegurança...\"\n- Apresente a solução: \"A Pâmela não ensina apenas a cantar. Ela usa o Método CP12, que trabalha o destravamento emocional e técnico. Não é sobre ter o dom, é sobre técnica e liberdade para louvar ao Senhor com excelência!\"\n\n## OS SERVIÇOS DA PÂMELA:\n1. Mentoria Individual Online (R$ 150/hora): Foco exclusivo, correção de pitch e destravamento via Google Meet.\n2. Mentoria Individual Presencial (R$ 200/hora): Foco na resolução de problemas técnicos profundos no estúdio em Muriaé.\n3. Aulas de Canto em Grupo Presencial: Muriaé/MG. São QUINZENAIS (Apenas 2 encontros no mês, durando 2 horas cada encontro). Valor: R$ 250,00 no primeiro mês (inscrição + material) e R$ 200,00 nas mensalidades seguintes.\n4. Masterclass para Igrejas (R$ 2.500): Evento imersivo de 3 horas para o Ministério de Louvor. Requisito: Apenas maiores de 18 anos. (NUNCA agende direto, colete os dados da igreja e avise a Pâmela na ferramenta Avisar_Pamela).\n\n## 🛑 LEI MARCIAL DE HORÁRIOS (RIGOR ABSOLUTO) 🛑\nVocê está estritamente PROIBIDA de agendar aulas fora destas janelas. A Pâmela tem outras demandas na semana.\nDIAS E HORAS PERMITIDOS (APENAS ESTES):\n- TERÇAS e SEXTAS-FEIRAS: Manhã (07h00 às 11h00) e Tarde (13h30 às 17h30).\n- Duração: 1 hora por sessão individual, e 2 horas para encontros em grupo.\n- SEGUNDA, QUARTA, QUINTA, SÁBADO E DOMINGO: ⛔ FECHADO. (Nunca agende).\n\n## LÓGICA DE AGENDAMENTO E RECORRÊNCIA (CRÍTICO)\nAntes de agendar no calendário (MCP Google Calendar), verifique a variável CRÉDITOS DE AULA no topo deste prompt:\n\nCENÁRIO A (Zero Créditos / Novo Aluno / Mensalidade Vencida):\nO PAGAMENTO É ANTECIPADO. Diga: \"Tenho vaga na terça às 14h! Para garantirmos, basta realizar o PIX para a chave: sdmdigital7@gmail.com e me enviar o comprovante aqui.\"\nQUANDO RECEBER O COMPROVANTE: \n1. Avise a Pâmela IMEDIATAMENTE (Avisar_Pamela: \"Pâmela, o aluno(a) X pagou e quer agendar.\")\n2. PERGUNTE AO ALUNO SOBRE A RECORRÊNCIA: \"Você prefere deixar esse mesmo horário fixo para todas as suas aulas do mês (ex: todas as terças às 14h)?\"\n3. Se ele disser \"Sim\", use a ferramenta de Criar Evento para agendar as aulas do mês inteiro naqueles dias específicos (respeitando os limites de crédito do pacote). Envie o material de boas-vindas.\n\nCENÁRIO B (Tem Créditos > 0):\nNÃO COBRE PIX. O aluno já tem aulas pagas no pacote. Verifique se ele já tem um horário fixo padrão. Se não tiver, ofereça os horários vazios de Terça ou Sexta e agende. Se tentar marcar mais aulas do que o plano permite (ex: 3ª aula em grupo), avise que os encontros do pacote já foram consumidos/agendados.\n\n## REGRAS DE OURO\n- Dados Obrigatórios: Para agendar ou vender a Masterclass, exija Nome Completo e Data de Nascimento (para validar os 18 anos). Se for antigo aluno não cadastrado, pergunte os dados para atualizar o sistema.\n- Google Calendar:\n  - Título do Evento: \"AULA - [Nome do Aluno]\".\n  - Descrição: \"Telefone: [Telefone do Usuário]\".\n- Confirmação e E-book: NUNCA esqueça de enviar o material de boas-vindas após o PRIMEIRO agendamento! Use Baixar e enviar arquivo.\n- Anti-Textão: O WhatsApp é rápido. Respostas curtas, no máximo 160 caracteres por bloco. Seja objetiva.\n- Memória: Ao confirmar um agendamento ou pagamento, use Salvar_memoria (se disponível).\n\n## 🗑️ PROTOCOLO DE CANCELAMENTO\nSe o aluno pedir para cancelar ou remarcar:\n1. Use MCP Google Calendar para encontrar o evento original.\n2. Delete o evento. Use Refletir para confirmar se apagou.\n3. Se deletou com sucesso, avise a Pâmela na ferramenta Avisar_Pamela e confirme ao aluno: \"Tudo certo! Aula cancelada. Quando o Senhor tocar no seu coração para remarcarmos, estarei aqui! 🙏\"\n\nCONSCIÊNCIA DE COBRANÇA: Nosso sistema dispara cobranças automáticas todos os dias de manhã. Se um usuário chegar repentinamente falando sobre pagamentos, atrasos, prometendo pagar depois ou enviando comprovantes, assuma imediatamente que ele está respondendo ao nosso lembrete automático. Não pergunte o contexto, apenas seja compreensiva, agradeça e atualize os créditos se houver comprovante.\n\nCONSCIÊNCIA DE FOLLOW-UP (VENDAS): Nosso sistema envia mensagens automáticas para leads que pediram orçamento tres dias após o primeiro contato e não responderam. Se um usuário chegar repentinamente se desculpando pela demora, dizendo que \"quer fechar\", pedindo o PIX novamente ou retomando um assunto de orçamento do nada, assuma imediatamente que ele está respondendo ao seu follow-up. Não pergunte do que ele está falando. Aja com naturalidade, celebre a decisão dele (\"Amém! Que alegria ter você com a gente!\") e passe as instruções de pagamento (PIX: sdmdigital7@gmail.com).\n\nCAPTAÇÃO DE LEADS: Se um contato novo pedir preços, orçamentos ou informações sobre as aulas, você DEVE explicar como funciona, passar os valores e imediatamente usar a ferramenta Salvar_Lead para registrar o contato no banco de dados. Nunca deixe um orçamento sem acionar a ferramenta Salvar_Lead."
+          "systemMessage": "=HOJE É: {{ $now.setZone('America/Sao_Paulo').toFormat('FFFF') }}\nTELEFONE DO CONTATO: {{ $('Info').item.json.telefone }}\nNOME DO USUÁRIO: {{ $('Info').item.json.nome_usuario || 'Não informado' }}\nPLANO NO CRM: {{ $('Verificar Cliente').item.json.plano_atual || 'Não cadastrado' }}\nCRÉDITOS DE AULA: {{ $('Verificar Cliente').item.json.creditos_ativos || 0 }}\n\n## 1. DIRETRIZ SUPREMA (LEI DE REFLEXÃO)\nVocê é OBRIGADA a usar a ferramenta \"Refletir\" ANTES de gerar qualquer resposta para o usuário. Use a ferramenta para planejar os passos, calcular horários, conferir os créditos do aluno e decidir qual ferramenta de banco de dados ou calendário acionar.\n\n## 2. SUA IDENTIDADE E TOM DE VOZ\nVocê é a Alícia, a assistente virtual da professora Pâmela Vieira.\n- Personalidade: Neutra, muito educada, acolhedora e profissional.\n- Tom: Seu tom de voz inspira confiança, coragem e superação. Acolha alunos com vergonha ou traumas vocais explicando: \"A Pâmela usa o método Direto ao Ponto. Ela trabalha o seu emocional e te ensina técnicas avançadas com foco em resultados. Não é sobre ter talento ou dom, é sobre alcançar as notas e cantar com alta performance e excelência.\"\n- Linguagem: Respostas CURTAS e ágeis. Use quebras de linha. NUNCA envie blocos gigantes de texto. Use emojis de forma elegante (ex: 🎤, ✨, 🎶, \"Que honra ter você com a gente!\"). NUNCA use jargões religiosos ou linguagem cristã.\n\n## 3. TRIAGEM, ALUNOS ANTIGOS E LEADS\nSE O CRM DIZ 'Não cadastrado' E ELE FOR UM ALUNO ANTIGO (já faz aulas com a Pâmela): Acolha com muita alegria (\"Que saudade!\"), reconheça-o como aluno da casa, peça os dados que faltam e use IMEDIATAMENTE a ferramenta \"Cadastrar_Aluno\" para migrá-lo para o novo sistema inteligente.\n\nSE FOR UM LEAD (Não cadastrado pedindo preço): Explique os serviços, seja persuasiva e use \"Salvar_Lead\" para registrar no funil.\n\nSE O ALUNO JÁ TEM PLANO: Apenas cumprimente com alegria (\"Olá [Nome], a paz! 🙏\") e vá direto ao assunto.\n- SE PERGUNTAREM A DIFERENÇA ENTRE INDIVIDUAL E GRUPO, SEJA PERSUASIVA: \n  \"A **Mentoria Individual** vai direto na sua necessidade. É uma aula de atenção total naquilo que você precisa trabalhar e corrigir. Já a **Aula em Grupo** visa a evolução de todos juntos. A coletividade é trabalhada, mas a Pâmela sempre dá atenção às dificuldades individuais de cada um. A única diferença é que você terá mais alunos juntos nesse processo de evolução!\"\n  (Envie estes vídeos de resultados: Vídeo Individual: [COLOQUE O LINK DO VIDEO INDIVIDUAL AQUI] | Vídeo Grupo: [COLOQUE O LINK DO VIDEO EM GRUPO AQUI]).\n- SE O LEAD PEDIR PREÇOS: Explique os serviços, passe os valores e IMEDIATAMENTE use a ferramenta \"Salvar_Lead\".\n\n## 4. SERVIÇOS E VALORES DA PÂMELA\n1. Mentoria Individual online (R$ 150/hora) com agendamento nas terça-feira ou sextas-feiras via Google Meet, ou Presencial (R$ 200/hora): Foco exclusivo.\n2. Aulas em Grupo Presencial (Muriaé/MG): Segundas e Quartas, entre 17h30 e 19h30. R$ 250,00 no 1º mês e R$ 200,00 nas mensalidades seguintes.\n3. Turma Kids (7 a 14 anos): Apenas nas Quintas-feiras. Se o aluno optar por aulas em grupo lembre de perguntar a idade do aluno, se for entre 7 a 14 anos é o grupo Kids as quintas-feiras.\n4. Masterclass para Igrejas (R$ 2.500): Imersão de 3h. Apenas maiores de 18 anos.\n\n## 5. PAGAMENTOS (PIX) E CANCELAMENTOS\n- PIX OFICIAL: sdmdigital7@gmail.com (Nenhum horário pode ser agendado ou confirmado antes do pagamento).\n- SE O USUÁRIO ENVIOU COMPROVANTE:\n  1. Considere o pagamento VÁLIDO.\n  2. Use a ferramenta \"Registrar_Pagamento\" para creditar as aulas no CRM.\n  3. Responda agradecendo, envie o Link do nosso Grupo VIP de Alunos: [COLOQUE O LINK DO GRUPO DO WHATSAPP AQUI] e envie o material didático correspondente (Material Individual: [COLOQUE O LINK DO MATERIAL INDIVIDUAL AQUI] | Material Grupo: [COLOQUE O LINK DO MATERIAL EM GRUPO AQUI]).\n  4. Informe a política de faltas: \"Importante: A Pâmela não trabalha com reposição para faltas avisadas com menos de 24 horas de antecedência. Cancelamentos só podem ser feitos 24h antes da aula, caso contrário, a aula será dada como realizada, tudo bem?\"\n ## 5. PAGAMENTOS (PIX) E RENOVAÇÃO\n\nPIX OFICIAL: sdmdigital7@gmail.com\n\nSE O USUÁRIO ENVIOU COMPROVANTE:\n\nConsidere o pagamento VÁLIDO.\n\nIMPORTANTE: Se o aluno estiver 'Não cadastrado' no CRM, use PRIMEIRO a ferramenta \"Cadastrar_Aluno\" para criar a ficha dele.\n\nUse a ferramenta \"Registrar_Pagamento\" para creditar as aulas e atualizar o financeiro.\n\nResponda agradecendo.\n\nInforme: \"A Pâmela não trabalha com reposição para faltas avisadas com menos de 24 horas de antecedência. Cancelamentos só podem ser feitos 24h antes da aula, tudo bem?\"\n\nUse a ferramenta \"Avisar_Pamela\" para notificar a professora.\n\n## 6. REGRAS DE AGENDA (LEI MARCIAL)\nAtenção redobrada de como prosseguir após o pagamento:\n- PARA AULAS INDIVIDUAIS: Você, Alícia, PODE agendar direto no MCP Google Calendar. Mas APENAS nas Terças e Sextas-feiras (07h00 às 11h00 e 13h30 às 17h30). \n- PARA AULAS EM GRUPO, MASTERCLASS E KIDS: Você NÃO pode agendar. Alunos de grupo precisam passar por avaliação vocal. Use a ferramenta \"Avisar_Pamela\" enviando a mensagem: \"O aluno(a) [Nome] pagou e está aguardando uma avaliação e a confirmação de horário para Aula em Grupo/Kids\". E diga ao aluno que a Pâmela fará uma avaliação e entrará em contato para definir o melhor horário.Se o aluno insistir em falar diretamente com a Pâmela ou atendimento humano avise a Pâmela em \"Avisar_Pamela\" enviando a mensagem: \"O aluno(a) [Nome] está querendo falar diretamente com você\". E avise o aluno que breve a Pâmela entrará em contato.\n\n## 7. CANCELAMENTOS NO SISTEMA\n- CANCELAR: Se for >24h de antecedência, delete o evento no MCP Google Calendar. Use \"Avisar_Pamela\" para notificar a chefe e confirme ao aluno."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.9,
       "position": [
-        1392,
-        640
+        1568,
+        432
       ],
       "id": "dfd28612-d256-401a-87b0-1e23ce900ef1",
       "name": "Alícia",
@@ -725,7 +703,8 @@
       ],
       "id": "f3a874e4-0be1-4be5-b0af-b24e3c2c1b7f",
       "name": "Gerar áudio",
-      "retryOnFail": true
+      "retryOnFail": true,
+      "disabled": true
     },
     {
       "parameters": {
@@ -746,7 +725,8 @@
         1088
       ],
       "id": "2d9b44c8-d3bc-4577-9488-83437e204f6f",
-      "name": "Formatar SSML"
+      "name": "Formatar SSML",
+      "disabled": true
     },
     {
       "parameters": {
@@ -787,23 +767,6 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $('Info3').item.json.telegram_chat_id }}",
-        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegramTool",
-      "typeVersion": 1.2,
-      "position": [
-        2928,
-        1232
-      ],
-      "id": "0cd7cab0-498d-4d58-8ab9-bed4c0c9546b",
-      "name": "Enviar alerta de cancelamento",
-      "webhookId": "d045a8c1-ec1b-4d20-8226-457aa18934af",
-      "disabled": true
-    },
-    {
-      "parameters": {
         "description": "FERRAMENTA OBRIGATÓRIA. Use esta ferramenta PRIMEIRO, antes de qualquer outra, para planejar sua resposta, fazer contas de horário e verificar se o limite QUEM ESTÁ ENTRANDO EM CONTATO, se é aluno antigo ou lead futuro aluno. É o seu cérebro.. Ela não obterá novas informações nem alterará o banco de dados, apenas adicionará o pensamento ao registro. Use-a  SEMPRE pois seu raciocínio é complexo ."
       },
       "type": "@n8n/n8n-nodes-langchain.toolThink",
@@ -825,8 +788,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        688,
-        1088
+        672,
+        1072
       ],
       "id": "13c38506-4ae9-4f4b-ab64-355e7b50bce9",
       "name": "Sticky Note17"
@@ -863,7 +826,8 @@
         1232
       ],
       "id": "8106350e-cc04-4926-8f44-a8951ac99318",
-      "name": "Responder mensagem áudio"
+      "name": "Responder mensagem áudio",
+      "disabled": true
     },
     {
       "parameters": {
@@ -883,7 +847,13 @@
         928
       ],
       "id": "d0811588-d208-49d4-8057-58d6af3fcbfd",
-      "name": "Reagir mensagem"
+      "name": "Reagir mensagem",
+      "credentials": {
+        "evolutionApi": {
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
+        }
+      }
     },
     {
       "parameters": {
@@ -1030,8 +1000,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        896,
-        928
+        704,
+        1184
       ],
       "id": "6bed5b3a-e35f-42f6-bfa1-1e7d13a5125e",
       "name": "Set mensagem.",
@@ -1073,8 +1043,9 @@
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4.1-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "builtInTools": {},
         "options": {}
@@ -1111,14 +1082,16 @@
         1280
       ],
       "id": "49bb4c16-d350-48d5-ad1b-cb2dfc2f5e6e",
-      "name": "OpenAI Chat Model1"
+      "name": "OpenAI Chat Model1",
+      "disabled": true
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4.1-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "builtInTools": {},
         "options": {}
@@ -1137,84 +1110,6 @@
           "name": "OpenAI account"
         }
       }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "c8fd010d-6096-4a50-b3e2-e9fe26661840",
-              "name": "id_mensagem",
-              "value": "={{ $json.body.data.key.id }}",
-              "type": "string"
-            },
-            {
-              "id": "8bf522a6-75fb-434a-854c-b736539309e1",
-              "name": "telefone",
-              "value": "={{ $json.body.data.key.remoteJid.split('@').first() }}",
-              "type": "string"
-            },
-            {
-              "id": "731eef50-51cd-4328-8eda-177d937d519b",
-              "name": "instancia",
-              "value": "=higia-cesar",
-              "type": "string"
-            },
-            {
-              "id": "0d622a33-f313-4758-a764-fa6cbf2b0587",
-              "name": "mensagem",
-              "value": "={{ $json.body.data.message.conversation || '' }}",
-              "type": "string"
-            },
-            {
-              "id": "8f4b9d84-56e0-4f45-9f17-68c53f365f43",
-              "name": "mensagem_de_audio",
-              "value": "={{ $json.body.data.message.audioMessage?.ptt || false }}",
-              "type": "boolean"
-            },
-            {
-              "id": "2b679a3f-788f-4cd2-88d5-4f03af68f224",
-              "name": "timestamp",
-              "value": "={{ $json.body.data.messageTimestamp }}",
-              "type": "number"
-            },
-            {
-              "id": "a445d43a-6cd5-4388-982b-9fc58433b342",
-              "name": "fromMe",
-              "value": "={{ $json.body.data.key.fromMe }}",
-              "type": "boolean"
-            },
-            {
-              "id": "3faf2f42-c3aa-4862-8e35-a09cfe87b2b8",
-              "name": "mensagem_de_grupo",
-              "value": "={{ $json.body.data.key.remoteJid.split('@').last() === 'g.us' }}",
-              "type": "boolean"
-            },
-            {
-              "id": "60cd2050-f950-4409-bd3c-79f7c29d20f0",
-              "name": "url_evolution",
-              "value": "=https://polinara-evolution-api.vlzm0b.easypanel.host",
-              "type": "string"
-            },
-            {
-              "id": "9d73a108-1624-4d16-b3ba-caac1c921d1d",
-              "name": "telegram_chat_id",
-              "value": "<cole seu telegram chat id>",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -1648,
-        1120
-      ],
-      "id": "ca544113-da3a-43c5-a690-2a285ea16f5e",
-      "name": "Info3",
-      "disabled": true
     },
     {
       "parameters": {
@@ -1273,7 +1168,13 @@
       "position": [
         3264,
         240
-      ]
+      ],
+      "credentials": {
+        "evolutionApi": {
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
+        }
+      }
     },
     {
       "parameters": {
@@ -1357,110 +1258,11 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        3664,
-        1056
+        3888,
+        880
       ],
       "id": "c4689e01-d9db-4db9-8edd-880d48954355",
-      "name": "Tipo de mensagem1"
-    },
-    {
-      "parameters": {
-        "description": "Use esta ferramenta SOMENTE quando o paciente solicitar explicitamente falar com um humano, relatar emergência médica, ou insistir muito após você já ter tentado ajudar. Ao usar esta ferramenta, a Anna será notificada imediatamente via WhatsApp para assumir o atendimento.",
-        "workflowId": {
-          "__rl": true,
-          "value": "SNl6S4ANNeWjFeYu",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/SNl6S4ANNeWjFeYu",
-          "cachedResultName": "5. Assistente Interno (WhatsApp Dr. Cesar)"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "telefone": "={{ $('Info').item.json.telefone }}",
-            "nome_usuario": "={{ $('Info').item.json.nome_usuario }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "telefone",
-              "displayName": "telefone",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
-            },
-            {
-              "id": "nome_usuario",
-              "displayName": "nome_usuario",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        }
-      },
-      "id": "4ae0fe27-2a69-4bdd-86da-0b80385f92ca",
-      "name": "Pamela_Admin",
-      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-      "typeVersion": 2.2,
-      "position": [
-        2800,
-        1424
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "description": " Quando o assunto é complexo ou o paciente exigir falar com o médico dr. Cesar,. é esta ferramenta que é ativada. USE ESSA FERRAMENTA QUANDO O CLIENTE QUISER FALAR COM O DR. CESAR.",
-        "workflowId": {
-          "__rl": true,
-          "value": "SNl6S4ANNeWjFeYu",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/SNl6S4ANNeWjFeYu",
-          "cachedResultName": "5. Assistente Interno (WhatsApp Dr. Cesar)"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {},
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-      "typeVersion": 2.2,
-      "position": [
-        2784,
-        1232
-      ],
-      "id": "70f8dde1-df25-406b-b83c-c79cca7255b2",
-      "name": "humano",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "resource": "messages-api",
-        "instanceName": "={{ $('Info').item.json.instancia }}",
-        "remoteJid": "={{ $('Info').item.json.telefone }}",
-        "messageText": "={{ $('Formatar texto').first().json.text }}",
-        "options_message": {}
-      },
-      "type": "n8n-nodes-evolution-api.evolutionApi",
-      "typeVersion": 1,
-      "position": [
-        4272,
-        192
-      ],
-      "id": "21b4ada4-0e5f-4f57-a217-43752af229e2",
-      "name": "enviar mens",
+      "name": "Tipo de mensagem1",
       "disabled": true
     },
     {
@@ -1522,7 +1324,7 @@
             {
               "id": "731eef50-51cd-4328-8eda-177d937d519b",
               "name": "instancia",
-              "value": "=higia-cesar",
+              "value": "=Pamela",
               "type": "string"
             },
             {
@@ -1809,7 +1611,7 @@
             },
             {
               "name": "text",
-              "value": "={{ $fromAI('mensagem', 'Mensagem de alerta de cancelamento para o Dr. Cesar', 'string') }}"
+              "value": "{{ $fromAI('mensagem', 'Mensagem de alerta de pagamento/cancelamento para o Avisar_Pamela', 'string') }}"
             }
           ]
         },
@@ -1921,7 +1723,7 @@
       "typeVersion": 3.4,
       "position": [
         672,
-        1408
+        1424
       ],
       "id": "d35fb912-10c0-4953-90eb-f12e5242ff2a",
       "name": "Edit Fields"
@@ -1945,99 +1747,96 @@
       "parameters": {
         "descriptionType": "manual",
         "toolDescription": "Ferramenta OBRIGATÓRIA. Acione esta ferramenta SEMPRE que uma pessoa nova pedir informações de preço, orçamentos ou como funcionam as aulas. Serve para registrar o Lead no sistema de vendas.",
-        "schema": {
-          "__rl": true,
-          "mode": "list",
-          "value": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "leads",
-          "mode": "list",
-          "cachedResultName": "leads"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "nome": "={{ $fromAI('nome', 'Nome do lead. Se não souber, coloque \"Lead Desconhecido\"', 'string') }}",
-            "telefone": "={{ $fromAI('telefone', 'Telefone do lead com DDI e DDD, apenas números', 'string') }}",
-            "interesse": "={{ $fromAI('interesse', 'Qual curso/mentoria o lead tem interesse (ex: Mentoria Individual, Aulas em Grupo, etc)', 'string') }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "nome",
-              "displayName": "nome",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "telefone",
-              "displayName": "telefone",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "interesse",
-              "displayName": "interesse",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "status_venda",
-              "displayName": "status_venda",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "data_ultimo_contato",
-              "displayName": "data_ultimo_contato",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": true
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
+        "operation": "executeQuery",
+        "query": "INSERT INTO leads (nome, telefone, interesse, status_venda, notas)\nVALUES (\n  '{{ $fromAI('nome', 'Nome do lead', 'string') }}',\n  '{{ $fromAI('telefone', 'Telefone do lead com DDI e DDD, apenas números', 'string') }}',\n  '{{ $fromAI('interesse', 'Mentoria Individual, Aula em Grupo ou Masterclass', 'string') }}',\n  'Novos Contatos',\n  'Vindo do atendimento automático Alícia WhatsApp'\n)\nON CONFLICT (telefone) DO NOTHING;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgresTool",
       "typeVersion": 2.6,
       "position": [
-        2352,
-        928
+        2336,
+        912
       ],
       "id": "e0f7f50a-e2c2-4909-99b6-7635a313eb76",
       "name": "Salvar_Lead",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.evandrosilvagallina.cloud/webhook/e56e25c6-d00e-40aa-83b6-4985aea910f1",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "instancia",
+              "value": "={{ $('Info').item.json.instancia }}"
+            },
+            {
+              "name": "telefone",
+              "value": "={{ $('Info').item.json.telefone }}"
+            },
+            {
+              "name": "status",
+              "value": "composing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        1424
+      ],
+      "id": "f28da79b-aaa5-4784-9d25-28b69893341b",
+      "name": "Digitando async1"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Ferramenta OBRIGATÓRIA. Use esta ferramenta EXCLUSIVAMENTE quando o aluno enviar o comprovante de pagamento PIX e ele for validado. Ela registra o valor no sistema financeiro e adiciona automaticamente 4 créditos na ficha do aluno.",
+        "operation": "executeQuery",
+        "query": "INSERT INTO transacoes (descricao, valor, tipo, categoria, status, data_vencimento, data_pagamento)\nVALUES (\n  'Mensalidade PIX - ' || '{{ $fromAI('nome', 'Nome do aluno que pagou', 'string') }}',\n  {{ $fromAI('valor', 'Valor numérico do plano. Ex: 200.00', 'number') }},\n  'RECEITA',\n  '{{ $fromAI('plano', 'Mentoria Individual, Aula em Grupo ou Masterclass', 'string') }}',\n  'PAGO',\n  CURRENT_DATE,\n  CURRENT_DATE\n);\n\nUPDATE alunos \nSET \n  creditos_ativos = creditos_ativos + 4,\n  status_pagamento = 'EM DIA',\n  data_vencimento = CURRENT_DATE + INTERVAL '30 days'\nWHERE user_id = '{{ $fromAI('telefone', 'Telefone do aluno com DDI e DDD', 'string') }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        2528,
+        944
+      ],
+      "id": "5cc09e99-a7ce-42a8-9b74-f639cc4c4f90",
+      "name": "Registrar_Pagamento",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Ferramenta OBRIGATÓRIA. Use para cadastrar um aluno antigo que não está no sistema, ou um novo aluno que acabou de pagar. Faça isso ANTES de registrar o pagamento dele.",
+        "operation": "executeQuery",
+        "query": "INSERT INTO alunos (user_id, nome, telefone, plano_atual)\nVALUES (\n  '{{ $fromAI('telefone', 'Telefone do aluno com DDI e DDD', 'string') }}',\n  '{{ $fromAI('nome', 'Nome completo do aluno', 'string') }}',\n  '{{ $fromAI('telefone', 'Telefone do aluno com DDI e DDD', 'string') }}',\n  '{{ $fromAI('plano', 'Mentoria Individual, Aula em Grupo ou Masterclass', 'string') }}'\n)\nON CONFLICT (user_id) DO UPDATE SET plano_atual = EXCLUDED.plano_atual;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        2704,
+        912
+      ],
+      "id": "a168c2cd-c9b0-4bf5-8d4b-2a6cf96b084c",
+      "name": "Cadastrar_Aluno",
       "credentials": {
         "postgres": {
           "id": "UcOJf6HG0NHFMc7h",
@@ -2085,7 +1884,7 @@
       "main": [
         [
           {
-            "node": "Alícia",
+            "node": "Digitando async",
             "type": "main",
             "index": 0
           }
@@ -2165,7 +1964,7 @@
       "main": [
         [
           {
-            "node": "Concatenar mensagens",
+            "node": "Alícia",
             "type": "main",
             "index": 0
           }
@@ -2176,7 +1975,7 @@
       "main": [
         [
           {
-            "node": "Set mensagem.",
+            "node": "Alícia",
             "type": "main",
             "index": 0
           }
@@ -2198,7 +1997,7 @@
       "main": [
         [
           {
-            "node": "Gravando async",
+            "node": "Set mensagem.",
             "type": "main",
             "index": 0
           }
@@ -2319,7 +2118,7 @@
       "main": [
         [
           {
-            "node": "Alícia",
+            "node": "Gravando async",
             "type": "main",
             "index": 0
           }
@@ -2426,7 +2225,7 @@
       "main": [
         [
           {
-            "node": "Digitando async",
+            "node": "Concatenar mensagens",
             "type": "main",
             "index": 0
           }
@@ -2595,7 +2394,7 @@
       "main": [
         [
           {
-            "node": "Alícia",
+            "node": "Digitando async1",
             "type": "main",
             "index": 0
           }
@@ -2603,6 +2402,39 @@
       ]
     },
     "Salvar_Lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "Alícia",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Digitando async1": {
+      "main": [
+        [
+          {
+            "node": "Alícia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar_Pagamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "Alícia",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cadastrar_Aluno": {
       "ai_tool": [
         [
           {
@@ -2623,7 +2455,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "9f3202dd-3290-4877-93e1-dca1b36d711d",
+  "versionId": "44c4cbdd-2f9b-4dd0-be76-d644e404e634",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"

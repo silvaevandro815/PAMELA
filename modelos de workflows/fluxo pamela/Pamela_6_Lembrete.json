@@ -4,9 +4,9 @@
     {
       "parameters": {
         "resource": "messages-api",
-        "instanceName": "higia-cesar",
+        "instanceName": "Pamela",
         "remoteJid": "={{ $json.phoneNumber }}",
-        "messageText": "=Olá! ⏰\nLembrete de: {{ $json.summary }}\nHorário: {{ DateTime.fromISO($json.startTime).setZone('America/Sao_Paulo').toFormat('HH:mm') }}\n\n(Se for aula, chegue com a voz aquecida! Se for cancelar, por favor nos avise. 🎤✨)",
+        "messageText": "=Olá! ⏰\nLembrete de: {{ $json.summary }}\nHorário: {{ DateTime.fromISO($json.startTime).setZone('America/Sao_Paulo').toFormat('HH:mm') }}\n\n=Olá! ⏰\nPassando para lembrar da nossa aula: {{ $json.summary }}\n🗓️ Horário: {{ DateTime.fromISO($json.startTime).setZone('America/Sao_Paulo').toFormat('dd/MM/yyyy às HH:mm') }}\n\n🎤✨ *Kit do Aluno:* Não esqueça de trazer sua garrafinha de água, materiais de anotação, fone de ouvido e seu aparelho didático (se fizer uso). Isso garante o seu conforto e o melhor resultado nas técnicas!\n(Se possível, chegue com a voz já aquecida. Se precisar cancelar, lembre-se do aviso prévio de 24h). Até lá!",
         "options_message": {}
       },
       "type": "n8n-nodes-evolution-api.evolutionApi",
@@ -15,12 +15,12 @@
         224,
         176
       ],
-      "id": "374a102e-59b1-48d7-bbfc-becebc4af490",
+      "id": "943cd689-267a-4508-9ffa-d08be1740cfa",
       "name": "Enviar texto",
       "credentials": {
         "evolutionApi": {
-          "id": "IoF9QBwvW7KPAMGu",
-          "name": "Evolution account antiga"
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
         }
       }
     },
@@ -34,7 +34,7 @@
         0,
         0
       ],
-      "id": "0515406f-3142-4874-847a-91ec9ea8a5b6",
+      "id": "3777deca-00ea-49aa-a0bc-c3a6e6a1f000",
       "name": "Wait",
       "webhookId": "043b69ec-10a5-4b4a-8941-baad1c69b4b7"
     },
@@ -48,7 +48,7 @@
         -224,
         192
       ],
-      "id": "017d808f-c58b-42e4-87df-eb46be634d96",
+      "id": "72f3262c-0747-40ba-a8e6-0b7d62e4f849",
       "name": "loop de envio"
     },
     {
@@ -60,7 +60,7 @@
         0,
         192
       ],
-      "id": "fe82bf46-9dbc-43ae-a8ba-06de923b8817"
+      "id": "dfe453ad-3601-4f7f-9801-35e26994c728"
     },
     {
       "parameters": {
@@ -73,7 +73,7 @@
           ]
         }
       },
-      "id": "ff28494f-e7d2-40d5-bbfc-0e582a82baab",
+      "id": "faa63b44-5bad-4b31-8f87-2f59fb905de3",
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
@@ -102,7 +102,7 @@
         },
         "options": {}
       },
-      "id": "ae1fdbc4-5d34-4958-ade1-536292dff352",
+      "id": "b1149314-3c2c-4745-99b8-e26f06909e6d",
       "name": "Workflow Configuration",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -116,15 +116,16 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
+          "value": "cantopamelavieira@gmail.com",
           "mode": "list",
-          "value": "umm032797@gmail.com"
+          "cachedResultName": "cantopamelavieira@gmail.com"
         },
         "returnAll": true,
         "timeMin": "={{ $json.start_time }}",
         "timeMax": "={{ $json.end_time }}",
         "options": {}
       },
-      "id": "c8234bcc-3c9a-48b9-9e23-bf9773c65b99",
+      "id": "48587e5c-da23-45c6-8677-716b28ea6c47",
       "name": "Get Calendar Events",
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
@@ -134,8 +135,8 @@
       ],
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "7juWTOZ4Pu22tVl5",
-          "name": "Google Calendar account"
+          "id": "9WraAijPxtf2EEeb",
+          "name": "AGENCIA"
         }
       }
     },
@@ -144,7 +145,7 @@
         "mode": "runOnceForEachItem",
         "jsCode": "// Extract phone number from calendar event description\nconst item = $input.item.json;\n\n// Extract phone number from description using regex\nconst description = item.description || '';\nconst phoneMatch = description.match(/Telefone:\\s*([\\d\\s\\-\\(\\)]+)/);\n\nlet phoneNumber = '';\nif (phoneMatch && phoneMatch[1]) {\n  // Clean phone number to only digits\n  phoneNumber = phoneMatch[1].replace(/\\D/g, '');\n}\n\n// Format start time\nconst startTime = item.start?.dateTime || item.start?.date || '';\n\n// Return event data with extracted phone number and formatted start time\nreturn {\n  json: {\n    eventId: item.id,\n    summary: item.summary,\n    description: item.description,\n    phoneNumber: phoneNumber,\n    startTime: startTime,\n    originalEvent: item\n  }\n};"
       },
-      "id": "e8871ed2-2f12-4905-9280-5117e1f7f1c7",
+      "id": "f4fd7fea-4d9f-4115-802a-1560f71d83db",
       "name": "Extract Phone Number",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -177,7 +178,7 @@
         },
         "options": {}
       },
-      "id": "0cc37f2d-19ea-4df2-a00a-02835e7669e7",
+      "id": "1f40f8aa-0e20-42b4-9a7a-65927bc60b1d",
       "name": "Filter Valid Phone Numbers",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
@@ -206,7 +207,7 @@
         },
         "options": {}
       },
-      "id": "71de281f-75c9-4674-8f2f-7aa7b7a99d15",
+      "id": "c8eed744-d6d2-4d44-9ab6-89eb10eeaf94",
       "name": "Calculate Time Window1",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -216,25 +217,7 @@
       ]
     }
   ],
-  "pinData": {
-    "Schedule Trigger": [
-      {
-        "json": {
-          "timestamp": "2026-01-19T15:30:27.006-03:00",
-          "Readable date": "January 19th 2026, 3:30:27 pm",
-          "Readable time": "3:30:27 pm",
-          "Day of week": "Monday",
-          "Year": "2026",
-          "Month": "January",
-          "Day of month": "19",
-          "Hour": "15",
-          "Minute": "30",
-          "Second": "27",
-          "Timezone": "America/Sao_Paulo (UTC-03:00)"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "loop de envio": {
       "main": [
@@ -343,17 +326,21 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false,
+    "binaryMode": "separate",
     "timeSavedMode": "fixed",
     "timezone": "America/Sao_Paulo",
-    "callerPolicy": "workflowsFromSameOwner"
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "78dc4662-64d4-4dd9-aedc-6a94e118305b",
+  "versionId": "fb937d88-ed8a-4498-a4aa-5c53b40402b7",
   "meta": {
-    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"
   },
+  "nodeGroups": [],
+  "id": "ybOCrfshFfh55sjS",
   "tags": []
 }

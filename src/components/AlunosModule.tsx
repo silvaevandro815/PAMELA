@@ -8,8 +8,7 @@ import {
   ShieldAlert, 
   Edit3, 
   X,
-  Eye,
-  CheckCircle2
+  Eye
 } from 'lucide-react';
 import { Aluno, PlanoType, StatusPagamento } from '@/types';
 import { AlunoDetailDrawer } from '@/components/AlunoDetailDrawer';
@@ -31,7 +30,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
-  const [planoAtual, setPlanoAtual] = useState<PlanoType>('Mentoria Individual');
+  const [planoAtual, setPlanoAtual] = useState<PlanoType>('MasterClass');
   const [creditosAtivos, setCreditosAtivos] = useState<number>(4);
   const [statusPagamento, setStatusPagamento] = useState<StatusPagamento>('EM DIA');
   const [dataVencimento, setDataVencimento] = useState('');
@@ -53,7 +52,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
     setNome('');
     setTelefone('');
     setDataNascimento('');
-    setPlanoAtual('Mentoria Individual');
+    setPlanoAtual('MasterClass');
     setCreditosAtivos(4);
     setStatusPagamento('EM DIA');
     setDataVencimento(new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]);
@@ -118,7 +117,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
       if (a.id === id) {
         const newCount = Math.max(0, a.creditos_ativos + delta);
         const updated = { ...a, creditos_ativos: newCount };
-        saveAlunoDB(updated); // Persist async
+        saveAlunoDB(updated);
         return updated;
       }
       return a;
@@ -138,7 +137,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-[#C89A44]/20 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-[#0E2A47]">Gestão de Alunos (Método CP12)</h1>
-          <p className="text-sm text-[#0E2A47]/70">Controle pedagógico com persistência em tempo real no Supabase</p>
+          <p className="text-sm text-[#0E2A47]/70">Controle de alunos, aulas individuais (MasterClass) e grupo</p>
         </div>
 
         <button
@@ -200,7 +199,6 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
               {filteredAlunos.length > 0 ? (
                 filteredAlunos.map(aluno => {
                   const age = calculateAge(aluno.data_nascimento);
-                  const isUnderageMasterclass = aluno.plano_atual === 'Masterclass' && age < 18;
 
                   return (
                     <tr key={aluno.id} className="hover:bg-[#F5E9DA]/30 transition-colors">
@@ -229,25 +227,17 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                         </div>
                       </td>
 
-                      {/* Plano & Warning */}
+                      {/* Plano */}
                       <td className="p-4">
-                        <div className="space-y-1">
-                          <span className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold ${
-                            aluno.plano_atual === 'Masterclass'
-                              ? 'bg-purple-100 text-purple-900 border border-purple-200'
-                              : aluno.plano_atual === 'Mentoria Individual'
-                              ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                              : 'bg-blue-100 text-blue-900 border border-blue-200'
-                          }`}>
-                            {aluno.plano_atual}
-                          </span>
-                          {isUnderageMasterclass && (
-                            <div className="flex items-center space-x-1 text-[10px] font-extrabold text-red-600">
-                              <ShieldAlert className="w-3 h-3" />
-                              <span>Requer &gt;18 anos!</span>
-                            </div>
-                          )}
-                        </div>
+                        <span className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold ${
+                          aluno.plano_atual === 'MasterClass'
+                            ? 'bg-[#C89A44] text-[#0E2A47]'
+                            : aluno.plano_atual === 'Mentoria Individual'
+                            ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                            : 'bg-blue-100 text-blue-900 border border-blue-200'
+                        }`}>
+                          {aluno.plano_atual === 'MasterClass' ? 'MasterClass (Individual)' : aluno.plano_atual}
+                        </span>
                       </td>
 
                       {/* Créditos de Aula */}
@@ -321,7 +311,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
               ) : (
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-gray-400">
-                    Nenhum aluno encontrado para os filtros selecionados.
+                    Nenhum aluno cadastrado no momento. Insira o primeiro aluno ou aguarde cadastros do WhatsApp!
                   </td>
                 </tr>
               )}
@@ -385,11 +375,6 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                     onChange={(e) => setDataNascimento(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
                   />
-                  {dataNascimento && (
-                    <p className="text-[10px] text-gray-500 mt-1">
-                      Idade calculada: {calculateAge(dataNascimento)} anos
-                    </p>
-                  )}
                 </div>
 
                 <div>
@@ -399,9 +384,9 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                     onChange={(e) => setPlanoAtual(e.target.value as PlanoType)}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:border-[#C89A44]"
                   >
-                    <option value="Mentoria Individual">Mentoria Individual (R$ 150/h)</option>
+                    <option value="MasterClass">MasterClass (Aula Individual)</option>
                     <option value="Aula em Grupo">Aula em Grupo (R$ 200/mês)</option>
-                    <option value="Masterclass">Masterclass (R$ 2.500)</option>
+                    <option value="Mentoria Individual">Mentoria Especial</option>
                   </select>
                 </div>
               </div>
@@ -454,7 +439,7 @@ export const AlunosModule: React.FC<AlunosModuleProps> = ({ alunos, setAlunos })
                   type="submit"
                   className="px-5 py-2 text-xs font-bold bg-[#C89A44] text-[#0E2A47] rounded-xl hover:bg-[#b28639] shadow-md"
                 >
-                  Salvar e Persistir
+                  Salvar no Supabase
                 </button>
               </div>
             </form>

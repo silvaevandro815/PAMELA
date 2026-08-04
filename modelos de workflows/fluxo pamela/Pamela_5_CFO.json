@@ -1,5 +1,5 @@
 {
-  "name": "5",
+  "name": "5-PAMELA",
   "nodes": [
     {
       "parameters": {
@@ -10,10 +10,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -32,
-        480
+        -112,
+        256
       ],
-      "id": "55cb969c-52a6-442b-9b87-02de3b2d01ea",
+      "id": "6e37d6c9-04ed-4c2f-ba35-8faf75ee6e5e",
       "name": "Webhook (Admin)",
       "webhookId": "assistente-interno"
     },
@@ -70,10 +70,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        272,
-        528
+        192,
+        304
       ],
-      "id": "ed419cd6-8411-4027-a28a-666206242b94",
+      "id": "259f8a0e-39b5-44ff-a479-fc435fdd555f",
       "name": "Info"
     },
     {
@@ -137,10 +137,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        480,
-        496
+        400,
+        272
       ],
-      "id": "23bc1a46-045c-4976-b323-b30f242cfb75",
+      "id": "2ab81d3a-7963-47d2-9d3f-8f4f032040ef",
       "name": "Tipo de mensagem"
     },
     {
@@ -154,15 +154,15 @@
       "type": "n8n-nodes-evolution-api.evolutionApi",
       "typeVersion": 1,
       "position": [
-        720,
-        400
+        640,
+        176
       ],
-      "id": "244840c0-ae6d-4f92-bfb9-3a9c4fa77f15",
+      "id": "c473e94f-3f96-47af-87cc-d801929dd357",
       "name": "Baixar Áudio (Evolution)",
       "credentials": {
         "evolutionApi": {
-          "id": "IoF9QBwvW7KPAMGu",
-          "name": "Evolution account antiga"
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
         }
       }
     },
@@ -175,10 +175,10 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        960,
-        368
+        880,
+        144
       ],
-      "id": "eb714cb0-0290-46f9-b5d3-daa8d42e0a4f",
+      "id": "6aa2a8ba-fbec-4280-a399-fa01b635453f",
       "name": "Converter para Binário"
     },
     {
@@ -192,15 +192,15 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        1168,
-        368
+        1088,
+        144
       ],
-      "id": "8b46c510-7437-4c43-aeff-fb0bb95cca2a",
+      "id": "0fa1f157-f5fe-4140-9ed4-8c3f11ad4459",
       "name": "Transcrever áudio",
       "credentials": {
         "openAiApi": {
-          "id": "sQIa2WfVd3Rptrok",
-          "name": "OpenAi account"
+          "id": "yaVUTfYvY1wk9lHF",
+          "name": "OpenAI account"
         }
       }
     },
@@ -221,10 +221,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1392,
-        400
+        1312,
+        176
       ],
-      "id": "3a99a438-df11-4ff5-9849-667e3586f333",
+      "id": "a71370de-e7bf-4fc0-8ac6-65d3aa04b0d2",
       "name": "Set mensagem áudio"
     },
     {
@@ -244,10 +244,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1344,
-        576
+        976,
+        448
       ],
-      "id": "50fe1b0a-b9ba-435e-b079-dcf1f60fe4f4",
+      "id": "d399ae46-b05b-46c9-9b31-00221ec94221",
       "name": "Set mensagem texto"
     },
     {
@@ -255,16 +255,16 @@
         "promptType": "define",
         "text": "={{ $json.mensagem_final }}",
         "options": {
-          "systemMessage": "Você é o **CFO (Diretor Financeiro) e Assistente Pessoal** da professora Pâmela Vieira.\nHOJE É: {{ $now.setZone('America/Sao_Paulo').toFormat(\"dd/MM/yyyy HH:mm\") }} - {{ $now.setZone('America/Sao_Paulo').toFormat(\"EEEE\", { locale: \"pt-BR\" }) }}\n\n## QUEM ESTÁ FALANDO COM VOCÊ?\nA PÂMELA! Os números autorizados são: 5532998132803 ou 553298132803.\n\n## SUA PERSONALIDADE (MODO CFO MILITAR)\n- **NÃO** seja fofo ou use muitos emojis (apenas ✅, 💰, 📊).\n- **NÃO** faça perguntas se não for estritamente necessário.\n- **EXECUTE AS TAREFAS** e dê relatórios curtos (Bullet points).\n- A Pâmela vai mandar áudios correndo entre as aulas. Sua função é captar as finanças e agenda.\n\n## DIRETRIZ SUPREMA\n**VOCÊ É OBRIGADO A USAR A FERRAMENTA \"Refletir\" ANTES DE CADA RESPOSTA PARA PLANEJAR QUAL AÇÃO TOMAR NO BANCO DE DADOS OU NA AGENDA.**\n\n## SEUS SUPER-PODERES E FERRAMENTAS (PostgreSQL & Google)\nVocê possui ferramentas SQL injetadas (Postgres Tools) e ferramentas de calendário. Use-as!\n\n### 1. REGISTRAR ALUNO (Tool: Registrar_Aluno)\n- **Quando usar:** Se a Pâmela pedir \"Cadastre o Marcos da silva, o telefone dele é 32999999999\".\n- **O que você faz:** Execute a query de INSERT na tabela alunos. Informe a Pâmela que foi cadastrado.\n\n### 2. REGISTRAR PAGAMENTO E AULAS (Tool: Registrar_Transacao)\n- **Quando usar:** Se a Pâmela mandar \"A Joana pagou 200 reais da aula em grupo\" ou \"Marcos fez o PIX de 150\".\n- **O que você faz:** Use a ferramenta de Postgres para registrar o pagamento na tabela `transacoes` e atualizar a tabela `alunos`. Confirme para ela: \"✅ Pagamento registrado. Saldo da Joana atualizado.\"\n\n### 3. CONSULTAR INADIMPLENTES OU RELATÓRIOS (Tool: Consultar_Relatorio)\n- **Quando usar:** Se a Pâmela perguntar \"Quem não pagou?\" ou \"Quanto ganhamos?\".\n- **O que você faz:** Execute a query SELECT e traga o resumo numérico exato.\n\n### 4. GESTÃO DE AGENDA E TAREFAS\n- **Quando usar:** Igual antes, use `MCP Google Calendar` para verificar vagas ou criar bloqueios.\n- Use `Criar tarefa` (Google Tasks) se ela pedir para lembrar de comprar algo.\n\n## REGRAS DE COMUNICAÇÃO\n- Nunca mande mensagens para pacientes através deste fluxo. Este fluxo é EXCLUSIVO para comunicação interna entre a IA e a Pâmela.\n- Se a Pâmela mandar um comando muito confuso, diga: \"Chefe, não entendi o valor ou o nome. Pode repetir?\""
+          "systemMessage": "==HOJE É: {{ $now.setZone('America/Sao_Paulo').toFormat(\"dd/MM/yyyy HH:mm\") }} - {{ $now.setZone('America/Sao_Paulo').toFormat(\"EEEE\", { locale: \"pt-BR\" }) }}\n\n## QUEM ESTÁ FALANDO COM VOCÊ?\nA sua chefe, a professora Pâmela Vieira! \n\n## SUA IDENTIDADE E TOM DE VOZ (MODO CFO EXECUTIVO)\n- Você é a Alícia, Assistente Executiva e Diretora Financeira (CFO) da Pâmela.\n- Você é EXTREMAMENTE objetiva, rápida e focada em dados. \n- NÃO seja prolixa. NÃO use texto longo. \n- Responda sempre em tópicos (Bullet points) usando apenas emojis executivos (✅, 💰, 📊, 📅, ❌).\n- A Pâmela vai te mandar áudios curtos enquanto corre entre as aulas. Sua função é captar as finanças, \ngerenciar a agenda e o CRM.\n\nSUA FUNÇÃO FINANCEIRA: Quando a Pâmela perguntar sobre faturamento, ganhos ou lucros do mês, você DEVE acionar a ferramenta Relatorio_Faturamento. Ela te retornará o valor exato. Formate a sua resposta em Reais (R$) de forma amigável, celebrando os resultados.\nExemplo: \"Até o momento, nosso faturamento confirmado deste mês é de R$ X.XXX,XX! Parabéns pelo excelente trabalho!\"\n\n## DIRETRIZ SUPREMA\nVocê é OBRIGADA a usar a ferramenta \"Refletir\" ANTES de cada resposta para planejar qual ação tomar no banco de dados (Supabase) ou na Agenda (Google Calendar).\n\n## SUAS FERRAMENTAS E RESPONSABILIDADES\n\n1. GESTÃO FINANCEIRA E DASHBOARD (Tool: Registrar_Transacao)\n- Se a Pâmela disser: \"O João pagou 200 da aula\", \"Gastei 50 com luz\", \"Registra a receita da masterclass\".\n- Ação: Use a ferramenta para inserir o valor no banco de dados. Isso atualizará o dashboard dela automaticamente.\n- Regra: Identifique se é 'RECEITA' ou 'DESPESA'.\n\n2. GESTÃO DE ALUNOS NO CRM (Tools: Registrar_Aluno / Atualizar_Creditos)\n- Se a Pâmela pedir para cadastrar alguém ou adicionar créditos para um aluno.\n- Ação: Use a ferramenta de banco de dados para inserir/atualizar a tabela 'alunos'.\n\n3. GESTÃO DE AGENDA (Tool: MCP Google Calendar)\n- Se a Pâmela pedir para ver o que tem amanhã, cancelar uma aula ou agendar um compromisso.\n- Ação: Use o MCP Calendar para ler, criar ou deletar eventos.\n\n4. COMUNICAÇÃO COM O ALUNO (Tool: Enviar_reagendamento)\n- Se a Pâmela mandar cancelar uma aula, VOCÊ DEVE avisar o aluno!\n- Ação: Primeiro delete na agenda. Depois, use esta ferramenta para enviar uma mensagem no WhatsApp do aluno informando o cancelamento/reagendamento. Peça para a Pâmela o número do aluno caso não esteja no evento.\n\n## ESTRUTURA DA SUA RESPOSTA À PÂMELA:\nSempre responda no formato de relatório rápido:\n✅ **Ação realizada:** (Ex: Aula do João cancelada e aluno avisado).\n💰 **Financeiro:** (Ex: R$ 200,00 adicionados como Receita).\n📅 **Agenda:** (Resumo do que ficou na agenda, se solicitado).\n\n5. REGRA DE BUSCA E AULAS EM GRUPO:\n\nSe a Pâmela pedir para agendar ou interagir com um aluno e disser apenas o nome (ex: \"Agende o Arthur\"), USE PRIMEIRO a ferramenta Buscar_Aluno para descobrir o telefone dele no banco de dados.\n\nAtenção para Aulas em Grupo: Se a Pâmela pedir para colocar alguém em uma aula de GRUPO (ex: Turma de Quarta 18h), NÃO crie um evento novo na agenda para não duplicar. Apenas use a ferramenta Atualizar_Creditos para descontar a aula, e a ferramenta Enviar_reagendamento para avisar ao aluno: \"Sua vaga na turma de quarta às 18h está confirmada!\".\n\n\n6. PROTOCOLO DE EMERGÊNCIA (CANCELAMENTO DE DIÁRIA):\n\nSe a Pâmela avisar que teve um imprevisto e pedir para cancelar todas as aulas de um dia (ex: \"Alícia, cancela as aulas de amanhã\" ou \"Cancela minha sexta\"):\n\nPASSO 1: Use a ferramenta do Google Calendar para listar todos os eventos daquele dia específico.\n\nPASSO 2: Extraia o Nome e o Telefone de cada aluno que está na descrição dos eventos.\n\nPASSO 3: Delete esses eventos da agenda.\n\nPASSO 4: Use a ferramenta Atualizar_Creditos para devolver 1 aula para cada aluno (já que não foi culpa deles).\n\nPASSO 5: Use a ferramenta Enviar_reagendamento para enviar EXATAMENTE esta mensagem para CADA um dos alunos:\n\"Olá! ✨ Aqui é a Alícia. Estou passando para avisar que a professora Pâmela teve um pequeno imprevisto pessoal e, infelizmente, precisaremos remarcar a nossa aula. Mas não se preocupe, sua aula já retornou como crédito no seu pacote! Quando tiver um tempinho, me chame aqui para reagendarmos, tá bom? Agradecemos muito a compreensão! 🙏\"\n\nPASSO 6: Confirme para a Pâmela: \"✅ Chefe, aulas de [Dia] canceladas, créditos devolvidos e todos os alunos foram avisados!\"\n\n7. GESTÃO DE TAREFAS E COMPRAS (Tool: Criar_tarefa)\n\nSe a Pâmela pedir para anotar um lembrete, lembrar de comprar algo para o estúdio, ou colocar qualquer pendência na lista (ex: \"Alícia, me lembra de comprar cabo P10 amanhã\" ou \"Anota aí pra eu revisar a planilha depois\").\n\nAção: Use a ferramenta Criar_tarefa para registrar isso diretamente no Google Tasks dela.\n\nPreenchimento: O \"Title\" deve ser a ação clara (ex: \"Comprar cabo P10\"). Se houver uma data mencionada no áudio, insira no \"Due Date\".\n\nConfirmação: Confirme rapidamente no WhatsApp: \"✅ Anotado na sua lista de tarefas, chefe!\""
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.8,
       "position": [
-        1696,
-        496
+        1616,
+        272
       ],
-      "id": "f9a0b316-1e0e-4c8e-8655-eefa2477f257",
+      "id": "01a7584e-8d53-4da1-a100-4acb0c32e7eb",
       "name": "CFO (Pâmela)"
     },
     {
@@ -278,15 +278,15 @@
       "type": "n8n-nodes-evolution-api.evolutionApi",
       "typeVersion": 1,
       "position": [
-        2048,
-        496
+        1968,
+        272
       ],
-      "id": "66cc0ada-21a1-44d2-be3d-513582236d75",
+      "id": "395f3fe4-3b56-4b5a-bccf-eb2c9dac0cc2",
       "name": "Responder à Pâmela",
       "credentials": {
         "evolutionApi": {
-          "id": "IoF9QBwvW7KPAMGu",
-          "name": "Evolution account antiga"
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
         }
       }
     },
@@ -295,20 +295,20 @@
         "sessionIdType": "customKey",
         "sessionKey": "admin_pamela",
         "tableName": "n8n_historico_mensagens",
-        "contextWindowLength": 500
+        "contextWindowLength": 1500
       },
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        1760,
-        736
+        1680,
+        512
       ],
-      "id": "a20b9f49-3f64-4d74-bb80-8ab10399ff82",
+      "id": "17044e88-aee5-495f-b22b-dd11d7264708",
       "name": "Memória CFO",
       "credentials": {
         "postgres": {
-          "id": "72ZKwkAZafPhoNSy",
-          "name": "Postgres account"
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
         }
       }
     },
@@ -320,57 +320,30 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1,
       "position": [
-        2000,
-        736
+        1920,
+        512
       ],
-      "id": "a8157ca3-efaf-40ac-977f-8655f02b3b1b",
+      "id": "f5d0925b-68ab-4d72-b94c-ca8f1e35de2d",
       "name": "MCP Google Calendar"
-    },
-    {
-      "parameters": {
-        "description": "Envia mensagem para o paciente avisando do cancelamento ou reagendamento.",
-        "workflowId": {
-          "__rl": true,
-          "value": "ID_DO_WORKFLOW_ENVIAR_AGENDAMENTO",
-          "mode": "id"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "mensagem": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mensagem', ``, 'string') }}",
-            "id_conversa": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id_conversa', ``, 'string') }}",
-            "id_conta": "Ignorar",
-            "url_chatwoot": "Ignorar"
-          }
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-      "typeVersion": 2.2,
-      "position": [
-        1536,
-        960
-      ],
-      "id": "613363ec-b891-4deb-9d21-d65d1616bbff",
-      "name": "Enviar msg Paciente",
-      "disabled": true
     },
     {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1,
       "position": [
-        1616,
-        736
+        1536,
+        512
       ],
-      "id": "db8e30f5-6bab-4e13-bcd3-a605477b4da3",
+      "id": "e3ceed46-3f1d-4fd9-9f77-6973e44ad41d",
       "name": "Refletir"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-4.1-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "builtInTools": {},
         "options": {}
@@ -378,47 +351,61 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        1488,
-        736
+        1408,
+        512
       ],
-      "id": "04f9b7a5-9a58-4e84-a3e2-821d6f60e30a",
+      "id": "274cb865-26b4-4600-9e1a-cfc27c4c4a80",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "sQIa2WfVd3Rptrok",
-          "name": "OpenAi account"
+          "id": "yaVUTfYvY1wk9lHF",
+          "name": "OpenAI account"
         }
       }
     },
     {
       "parameters": {
-        "toolDescription": "Use esta ferramenta EXCLUSIVAMENTE para enviar mensagens de aviso de cancelamento ou reagendamento para o WhatsApp do paciente. Requer o número do telefone (apenas dígitos, com 55 e DDD) e a mensagem de texto.\n\nO telefone deve ser formatado com apenas números, incluindo o código do país.\n\nExemplo: \"551112345678\"",
+        "toolDescription": "Use esta ferramenta EXCLUSIVAMENTE para enviar mensagens de aviso de cancelamento ou reagendamento para o WhatsApp do aluno. Requer o número do telefone ou nome (apenas dígitos, com 55 e DDD) e a mensagem de texto.\n\nO telefone deve ser formatado com apenas números, incluindo o código do país.\n\nExemplo: \"551112345678\"",
         "method": "POST",
-        "url": "={{ $('Info').first().json.url_evolution }}/message/sendText/{{ $('Info').item.json.instancia }}",
+        "url": "={{ $('Info').first().json.url_evolution }}/message/sendText/{{ $('Info').first().json.instancia }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "evolutionApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{telefone}\",\n  \"text\": \"{mensagem}\"\n}"
+        "jsonBody": "={\n  \"number\": \"{telefone}\",\n  \"text\": \"{mensagem}\"\n}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "telefone",
+              "description": "Número do aluno com DDI e DDD. Apenas números.",
+              "type": "string"
+            },
+            {
+              "name": "mensagem",
+              "description": "O texto da mensagem de aviso de cancelamento/reagendamento.",
+              "type": "string"
+            }
+          ]
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
       "typeVersion": 1.1,
       "position": [
-        1888,
-        736
+        1808,
+        512
       ],
-      "id": "efb23abc-1a18-4da9-9e55-9f714264379f",
+      "id": "5ab534f7-d005-46f1-b1aa-d4bc3eb18a19",
       "name": "Enviar reagendamento",
       "credentials": {
         "evolutionApi": {
-          "id": "IoF9QBwvW7KPAMGu",
-          "name": "Evolution account antiga"
+          "id": "VpNccgcERuT1kuJD",
+          "name": "Evolution account"
         }
       }
     },
     {
       "parameters": {
-        "task": "=",
+        "task": "=@default",
         "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
         "additionalFields": {
           "dueDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Due_Date', ``, 'string') }}",
@@ -429,65 +416,17 @@
       "type": "n8n-nodes-base.googleTasksTool",
       "typeVersion": 1,
       "position": [
-        2128,
-        736
+        2048,
+        512
       ],
-      "id": "57ac7a67-1c6c-4ef7-8c3b-ffaed673abef",
+      "id": "908c1308-cf19-48ca-876d-317251d78e52",
       "name": "Criar tarefa",
       "credentials": {
         "googleTasksOAuth2Api": {
-          "id": "FXqKuRq8V7cFW9nQ",
+          "id": "WvXMhmJHCUENg8Kr",
           "name": "Google Tasks account"
         }
       }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "check_doctor_number",
-              "leftValue": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
-              "rightValue": "5532998132803@s.whatsapp.net",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "check_second_number",
-              "leftValue": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
-              "rightValue": "553298132803",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "or"
-        },
-        "looseTypeValidation": true,
-        "options": {},
-        "disabled": false
-      },
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.2,
-      "position": [
-        80,
-        224
-      ],
-      "id": "11dda3ee-cc74-4124-b728-4859f97b90cf",
-      "name": "É a Pâmela?",
-      "executeOnce": false,
-      "alwaysOutputData": false,
-      "retryOnFail": false,
-      "disabled": true
     },
     {
       "parameters": {
@@ -496,41 +435,318 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -176,
+        -256,
+        432
+      ],
+      "id": "4d8a804a-e139-4e6b-ab1e-2f60378ef901",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Salva receitas ou despesas financeiras no banco de dados para atualizar o dashboard.",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "transacoes",
+          "mode": "list",
+          "cachedResultName": "transacoes"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tipo": "={{ $fromAI('tipo', 'Obrigatório ser apenas a palavra RECEITA ou DESPESA', 'string') }}",
+            "valor": "={ $fromAI('valor', 'O valor em formato numérico. Exemplo: 150.00', 'number') }}",
+            "categoria": "={{ $fromAI('categoria', 'Categoria da transação. Exemplo: Mensalidade, Luz, Equipamento', 'string') }}",
+            "descricao": "={{ $fromAI('descricao', 'Resumo curto de quem pagou ou do que foi comprado', 'string') }}",
+            "data_transacao": "="
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor",
+              "displayName": "valor",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "descricao",
+              "displayName": "descricao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "aluno_id",
+              "displayName": "aluno_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_transacao",
+              "displayName": "data_transacao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        2176,
+        496
+      ],
+      "id": "b0f14eae-30bc-4509-8caf-c62760b918f4",
+      "name": "Registrar_Transacao",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Atualiza a quantidade de aulas/créditos de um aluno.",
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "=alunos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefone": "={{ $fromAI('telefone', 'Telefone do aluno com DDI e DDD, apenas números. Ex: 553299999999', 'string') }}",
+            "creditos_ativos": "={{ $fromAI('creditos_ativos', 'Nova quantidade total de créditos de aulas. Ex: 4', 'number') }}",
+            "status_pagamento": "={{ $fromAI('status_pagamento', 'O status atualizado. Valores estritos permitidos: EM DIA, PENDENTE ou ATRASADO', 'string') }}",
+            "plano_atual": "={{ $fromAI('plano_atual', 'O plano do aluno. Ex: Mentoria Individual, Aulas em Grupo', 'string') }}"
+          },
+          "matchingColumns": [
+            "telefone"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "creditos_ativos",
+              "displayName": "creditos_ativos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "plano_atual",
+              "displayName": "plano_atual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_vencimento",
+              "displayName": "data_vencimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "data_nascimento",
+              "displayName": "data_nascimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status_pagamento",
+              "displayName": "status_pagamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        2352,
+        496
+      ],
+      "id": "2fb3e4c5-96d9-4046-be29-5c72cec68324",
+      "name": "Atualizar_Creditos",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use esta ferramenta para consultar o faturamento (soma de todas as receitas pagas) do mês atual no banco de dados. Acione SEMPRE que a Pâmela perguntar sobre os ganhos, lucros, ou faturamento do mês.",
+        "operation": "executeQuery",
+        "query": "SELECT \n  COALESCE(SUM(valor), 0) as faturamento_mes \nFROM transacoes \nWHERE tipo = 'RECEITA' \n  AND status = 'PAGO' \n  AND extract(month from data_pagamento) = extract(month from current_date);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        2512,
+        416
+      ],
+      "id": "814b937f-2cb0-49ff-838a-415b8c7f8d7d",
+      "name": "Relatorio_Faturamento",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use esta ferramenta para buscar o telefone e os dados de um aluno no banco de dados pesquisando apenas pelo primeiro nome, ou primeiro e segundo nome. Acione sempre que a Pâmela pedir para agendar ou atualizar alguém e não fornecer o número.",
+        "operation": "executeQuery",
+        "query": "SELECT nome, telefone, plano_atual, creditos_ativos \nFROM alunos \nWHERE nome ILIKE '%' || '{{ $fromAI('nome', 'Nome do aluno', 'string') }}' || '%';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        2480,
         656
       ],
-      "id": "fd43d3af-a086-4e48-af0a-6d212a87c03c",
-      "name": "When Executed by Another Workflow"
+      "id": "67db80b8-2f68-40da-959f-e91cfe9ae71b",
+      "name": "Buscar_Aluno",
+      "credentials": {
+        "postgres": {
+          "id": "UcOJf6HG0NHFMc7h",
+          "name": "Pamela"
+        }
+      }
     }
   ],
   "pinData": {
     "Webhook (Admin)": [
-      {
-        "json": {
-          "body": {
-            "event": "messages.upsert",
-            "instance": "higia-cesar",
-            "data": {
-              "key": {
-                "remoteJid": "553288874319@s.whatsapp.net",
-                "fromMe": false,
-                "id": "3EB093982823A82"
-              },
-              "pushName": "Dr. Cesar Bizzo",
-              "status": "notify",
-              "message": {
-                "conversation": "Hígia, como está a minha agenda para amanhã?"
-              },
-              "messageType": "conversation",
-              "messageTimestamp": 1705500000,
-              "source": "ios"
-            },
-            "sender": "553288874319@s.whatsapp.net"
-          }
-        }
-      }
-    ],
-    "When Executed by Another Workflow": [
       {
         "json": {
           "body": {
@@ -741,27 +957,62 @@
         ]
       ]
     },
-    "É a Pâmela?": {
-      "main": [
-        []
+    "Registrar_Transacao": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar_Creditos": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relatorio_Faturamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_Aluno": {
+      "ai_tool": [
+        [
+          {
+            "node": "CFO (Pâmela)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false,
-    "timeSavedMode": "fixed",
-    "saveDataErrorExecution": "all",
-    "saveDataSuccessExecution": "all",
-    "saveExecutionProgress": true,
-    "saveManualExecutions": true,
-    "callerPolicy": "workflowsFromSameOwner",
-    "timezone": "America/Sao_Paulo"
+    "binaryMode": "separate"
   },
-  "versionId": "71394ec2-d144-4768-876f-7fe4dbc4d95e",
+  "versionId": "971e9ff5-ea9d-4ab4-a78c-bee2f05cdd78",
   "meta": {
-    "instanceId": "d5bf6e6597b67d9db4552c252391505743f73747b245444a4612e0bcf3bc5458"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7836d908de6149b5f67a8957b5f8810268a605d5c824eee15fa8c5260373c7aa"
   },
+  "nodeGroups": [],
+  "id": "KOByH4YvPA1xnyOP",
   "tags": []
 }
